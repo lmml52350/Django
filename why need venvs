@@ -6,15 +6,53 @@ A프로젝트에서 2.x버전 필요 / b 프로젝트에서는 3.x 버전이 필
 서로 다른 
 
 가상환경 생성
-python -m venv mysite[이름] 
-가상환경 진입
-activate
-가상환경 종료
-deactivate
 
-버전확인
-python m django --version
+1. cmd 실행 및 C: 이동
+C:\>cd /
 
+2. 가상 환경 담을 디렉터리 venvs 생성 및 이동
+
+C:>mkdir venvs
+
+C:>cd venvs
+
+3. 가상환경 생성
+C:\venvs>python -m venv mysite(가상환경이름)
+
+4. 가상환경 진입 
+C:\venvs> cd C:\venvs\mysite\Scripts
+C:\venvs\mysite\Scripts> activate 
+
+(mysite) C:\venvs\mysite\Scripts>
+
+5. 가상환경 종료
+(mysite) C:\venvs\mysite\Scripts>deactivate
+
+6. django 버전 확인 > 에러(정상) 
+C:\venvs\mysite\Scripts>python -m django --version
+C:\venvs\mysite\Scripts\python.exe: No module named django
+
+7. 가상환경 활성화 및 장고 설치
+C:\venvs\mysite\Scripts>activate
+(mysite) C:\venvs\mysite\Scripts>python -m pip install django==3.1.3
+
+
+8. django 버전 확인 
+(mysite) C:\venvs\mysite\Scripts>python -m django --version
+3.1.3
+
+9. pip 최신 버전으로 설치
+(mysite) C:\venvs\mysite\Scripts>python -m pip install --upgrade pip
+Requirement already satisfied: pip in c:\venvs\mysite\lib\site-packages (22.3.1)
+Collecting pip
+  Downloading pip-23.0.1-py3-none-any.whl (2.1 MB)
+     ---------------------------------------- 2.1/2.1 MB 10.9 MB/s eta 0:00:00
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 22.3.1
+    Uninstalling pip-22.3.1:
+      Successfully uninstalled pip-22.3.1
+Successfully installed pip-23.0.1 
 
 
 
