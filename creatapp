@@ -15,8 +15,14 @@ jango-admin startproject config . (현재 디렉토리 에서)
 장고 프로젝트 생성 명령어(".") 현재 경로에 config라는 이름의 프로젝트 생성
 config 이름을 사용하여 전체 프로젝트의 RootDir의 디렉토리명을 config로 정의한다
 
+SEETTING.PY 진입후 설정
 'MTV.apps.MtvConfig',  추가(앱추가)
 
+LANGUAGE_CODE = 'ko-kr'
+TIME_ZONE = 'Asia/Seoul'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = False
 
 개발서버 구동
 python manage.py runserver
@@ -24,3 +30,5 @@ python manage.py runserver
 http://127.0.0.1:8000/
 
 ctrl +c 중단
+
+
