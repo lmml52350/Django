@@ -5,44 +5,134 @@ manage.py 를 이용하여 위에서 생성한 장고 프로젝트에서 사용�
 관리자 계정생성 (프로젝트 내부의 모든 권한을 부여 )된 SUper uer생성
 
 
+-  가상 환경 구축
+
+- 장고 프로젝트 생성
+
+1. 프로젝트 디렉터리 생성
 mkdir project
 cd project
-C:\venvs\mysite\Scripts\activate
+
+2. 프로젝트 디렉터리 실행  > Code로 열기 실행
+
+3. 터미널 실행 > Ctrl + ` > Command prompt
+
+4. 장고 프로젝트를 담을 디렉터리 생성
 mkdir mysite
 cd mysite
 
-jango-admin startproject config . (현재 디렉토리 에서)
-장고 프로젝트 생성 명령어(".") 현재 경로에 config라는 이름의 프로젝트 생성
-config 이름을 사용하여 전체 프로젝트의 RootDir의 디렉토리명을 config로 정의한다
+5. 가상환경 진입
+cd C:\venvs\mysite\Scripts
+activate
 
-SEETTING.PY 진입후 설정
-'MTV.apps.MtvConfig',  추가(앱추가)
+6. 장고 프로젝트 생성
+(mysite) C:\mysite>cd C:\project\mysite 
 
-LANGUAGE_CODE = 'ko-kr'
-TIME_ZONE = 'Asia/Seoul'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = False
+(mysite) C:\project\mysite>django-admin startproject config .
 
-개발서버 구동
+
+7. migrate 명령어로 DB연동
+(mysite) C:\project\mysite>python manage.py migrate
+
+
+8. 관리자 계정 생성
+(mysite) C:\project\mysite>python manage.py createsuperuser       
+Username (leave blank to use 'kgitbank'): admin
+Email address: admin@localhost.com
+Password: 
+Password (again): 
+The password is too similar to the username.
+This password is too short. It must contain at least 8 characters.This password is too common.
+Bypass password validation and create user anyway? [y/N]: y
+Superuser created successfully.
+
+
+
+-------------------------------------------------------------------------
+
+- 장고 앱 생성
+
+1. MTV 앱 생성
+django-admin startapp MTV
+
+2. 앱 등록
+
+경로: C:\project\mysite\config\setting.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'MTV.apps.MtvConfig',
+]
+
+
+3. 개발 서버 구동
 python manage.py runserver
 
-http://127.0.0.1:8000/
+4. 웹 브라우저 실행
+주소창에 http://127.0.0.1 입력 후 확인 
 
-ctrl +c 중단
+5. 서버 종료 > 터미널에서 Ctrl + c 입력 
 
-관리자 계정으로 로그인
-http://127.0.0.1:8000/admin 
-127.0.0.1 는 현재 컴퓨터를 가르키는 ip주소 (Localhost - 개발서버)
+6. 설정 변경  및 확인
 
-포트
-port 는 ip내에서 애플리케이션 상호 구분(프로세스를구분 ) 을 위해 사용되는 번호
+경로: C:\project\mysite\config\setting.py
 
-0~1023 잘 알려진
-1024~49151 
+LANGUAGE_CODE = 'ko-kr'
 
-포트변경 
-python manage.py runserver localhost:7000 
+TIME_ZONE = 'Asia/Seoul'
+
+USE_TZ = False
+
+개발 서버 구동
+python manage.py runserver
+
+
+7. 관리자 계정으로 로그인
+
+1) 서버 실행 
+2) http://127.0.0.1:8000/admin입력
+3) id: admin / password: admin 입력 및 로그인 클릭
+
+
+8. 포트 번호 변경
+
+127.0.0.1은 현재 컴퓨터를 가르키는 Ip주소(Localhost - 개발 서버)
+
+Port 는 IP 내에서 애플리케이션 상호 구분(프로세스를 구분)을 위해 사용되는 번호
+
+0 ~ 1023 : 잘 알려진 Well-Known Port 라고 부르며, 웹 서버나 메일 서버 등의 일반적인 프로그램들이 사용합니다.
+1024 ~ 49151 : Registered Port 라고 부르며, 잘 알려져 있는 프로그램들이 아닌 다른 용도의 프로그램들이 사용합니다.
+49152 ~ 65535 : 동적 포트(Dynamic Port)로 서버가 클라이언트를 식별할 때 사용합니다.
+
+- 포트 번호 변경
+(mysite) C:\project\mysite>python manage.py runserver localhost:7000
+
+- 개발 서버 실행
+http://127.0.01:7000/
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
