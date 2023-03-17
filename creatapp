@@ -1,0 +1,26 @@
+프로젝트 생성시 manage.py가 생성되며 장고 프로젝트내 각종관리 작업시 manage.py 스크립트 파일이 사용된다,
+장고 프레임워크는 기본적으로 WEB Server 와 DB Server 의 기능을 수행할수 있는 기능이 탑재 되었다
+manage.py 를 이용하여 위에서 생성한 장고 프로젝트에서 사용할 Database를 생성한다 (SQLite3 사용)
+
+관리자 계정생성 (프로젝트 내부의 모든 권한을 부여 )된 SUper uer생성
+
+
+mkdir project
+cd project
+C:\venvs\mysite\Scripts\activate
+mkdir mysite
+cd mysite
+
+jango-admin startproject config . (현재 디렉토리 에서)
+장고 프로젝트 생성 명령어(".") 현재 경로에 config라는 이름의 프로젝트 생성
+config 이름을 사용하여 전체 프로젝트의 RootDir의 디렉토리명을 config로 정의한다
+
+'MTV.apps.MtvConfig',  추가(앱추가)
+
+
+개발서버 구동
+python manage.py runserver
+
+http://127.0.0.1:8000/
+
+ctrl +c 중단
