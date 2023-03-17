@@ -1,0 +1,237 @@
+# -*- coding: UTF-8 -*-
+from openpyxl import load_workbook
+import time
+import json
+import requests
+import re
+import os
+import module.date
+
+year = module.date.this_year()
+month = module.date.this_month()
+day = module.date.this_day()
+start_day = module.date.jira_start_day()
+end_day = module.date.jira_end_day()
+DueDate = module.date.jira_due_date()
+before_3day = module.date.date_before_3day()
+before3_year_month = module.date.date_display_before_3days()
+week = module.date.this_week(year, month)
+fenji, time_start, time_end, current_quarter = \
+    module.date.this_quarter(year, month)
+jira_key = ""
+day_value = 24 * 60 * 60
+today_timestamp = time.time()
+
+
+def timestamptolocatime(timestamp, date_format):
+    return time.strftime(date_format, time.localtime(timestamp))
+
+
+year_365dayago = timestamptolocatime(today_timestamp - (365 * day_value), '%Y')
+yearandmonth = timestamptolocatime(today_timestamp, '(%Y.%m)')
+before3_month = timestamptolocatime(today_timestamp - (3 * day_value), '%m')
+today_type1 = timestamptolocatime(today_timestamp, '%Y-%m-%d')
+before_2day_type1 = timestamptolocatime(today_timestamp
+                                        - (2 * day_value), '%Y-%m-%d')
+
+print(os.path.abspath(
+    os.path.dirname(
+        os.path.dirname(__file__)))
+      + '\\excel\\2022.3Q sssss - 파이썬 자동화 용.xlsx')
+path = os.path.abspath(
+    os.path.dirname(
+        os.path.dirname(__file__))) \
+       + '\\excel\\2022.3Q sssss - 파이썬 자동화 용.xlsx'
+
+
+workbook = load_workbook(path, read_only=True)
+sheet1 = workbook.active  
+print(sheet1)
+excel_data = [] 
+print(excel_data)
+excel = list(sheet1.rows)
+excel_len = len(list(sheet1.rows))
+for i in range(0, excel_len):
+    for idx, cell in enumerate(excel[i]):
+        excel_data.append(str(cell.value))
+
+
+class Datenumpy:
+    def __init__(self, shell_point):
+        self.shell_point = shell_point
+
+    @staticmethod
+    def regex_sum(shell_point):
+        regex = r"\=[^\)]+\)"
+        name1 = re.sub(regex, '', shell_point)
+        regex2 = r"\'[^\)]+\)"
+        name2 = re.sub(regex2, '', name1)
+        regex3 = r"\)"
+        name3 = re.sub(regex3, '', name2)
+        regex4 = r"\,"
+        name4 = re.sub(regex4, '', name3)
+        regex5 = r"\""
+        name5 = re.sub(regex5, '', name4)
+        return name5
+
+
+# 긴배 현황 -- point
+emergency_sum1 = Datenumpy.regex_sum(sheet1['G4'].value)
+emergency_sum2 = Datenumpy.regex_sum(sheet1['G5'].value)
+emergency_sum3 = Datenumpy.regex_sum(sheet1['G6'].value)
+emergency_sum4 = Datenumpy.regex_sum(sheet1['G7'].value)
+emergency_sum5 = Datenumpy.regex_sum(sheet1['G8'].value)
+emergency_sum6 = Datenumpy.regex_sum(sheet1['G9'].value)
+emergency_sum9 = Datenumpy.regex_sum(sheet1['G12'].value)
+emergency_sum10 = Datenumpy.regex_sum(sheet1['G13'].value)
+print(emergency_sum1)
+
+# 리소스 목표 -- 정열수치
+emergency_aims1 = sheet1['E4'].value
+emergency_aims2 = sheet1['E5'].value
+emergency_aims3 = sheet1['E6'].value
+emergency_aims4 = sheet1['E7'].value
+emergency_aims5 = sheet1['E8'].value
+emergency_aims6 = sheet1['E9'].value
+emergency_aims9 = sheet1['E12'].value
+emergency_aims10 = sheet1['E13'].value
+print(emergency_aims1)
+
+
+def bigjira_set(search, epic_name, label_make1):
+    global jira_key
+    url = "https://sssss" + "?jql=" + str(search)
+    print(url)
+    payload = json.dumps({})
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json',
+               'Authorization': 'Basic bWxlZTAssssssssjaA==', }
+    response = requests.request("GET", url, headers=headers, data=payload)
+    print(response.status_code)
+    data = response.json()
+    all_total = data['total']
+    print(all_total)
+
+    if all_total != 0:
+        data = response.json()
+        jira_key = data['issues'][0]['key']
+        print("이미있음")
+        print(jira_key)
+    else:
+        print("없음")  # 큰틀 없다면 등록
+        url = "https://jira.simplexi.com/rest/api/2/issue"
+        headers = {'Accept': 'application/json',
+                   'Content-Type': 'application/json',
+                   'Authorization': 'Basic bWxlZTAsssssssssss==', }
+        payload = json.dumps({
+            "fields": {"summary": epic_name,
+                       "issuetype": {"id": "1xxx"},
+                       "project": {"id": "xxx"},
+                       "reporter": {"name": "xxxxx"},
+                       "assignee": {"name": "xxxxx"},  
+                       "priority": {"id": "3"},
+                       "customfield_10400": [{"name": "xxxxx"}],
+                       "security": {"id": "11828"},
+                       "labels": [label_make1, current_quarter,
+                                  "SsssssP", "긴sssss"],
+                       "customfield_15313": time_start,
+                       "customfield_15314": time_end,
+                       "duedate": time_end,
+                       "customfield_25403": epic_name
+                       }
+        })
+
+        response = requests.post(url, headers=headers, data=payload)
+        print(response.status_code)
+        data = response.json()
+        jira_key = data['key']
+        print("큰틀:" + jira_key)
+    return search, epic_name, label_make1
+
+
+def jira_set(title_caget, damdang, chamzo, label_make1, current_quarter,
+             jira_key, point, mubiao):
+    url = "https://jira.ssssssssssssss/rest/api/2/issue"
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json',
+               'Authorization': 'Basic bWxlZTAxxxsss', }
+    payload = json.dumps({
+        "fields": {
+            "summary": title_caget,  # 제목
+            "issuetype": {"id": "xxx"},
+            "project": {"id": "xxx"},
+            "reporter": {"name": "xxxxx"},
+            "assignee": {"name": damdang},  # 
+            "priority": {"id": "3"},
+            "customfield_10400": [{"name": damdang}, {"name": "xxxxx"},
+                                  {"name": chamzo}],  
+            "security": {"id": "xxx"},
+            "customfield_15313": start_day,
+            "customfield_15314": end_day,
+            "duedate": end_day,
+            "labels": [label_make1, current_quarter, "SssssAP",
+                       "긴ssss"],
+            "customfield_25402": jira_key,  # epic_link
+            "customfield_21104": float(point),  # 스토리 포인트
+            "customfield_20800": float(mubiao)
+        }
+    })
+
+    response = requests.post(url, headers=headers, data=payload)
+    print(response.status_code)
+    print("스토리 등록완료")
+    return title_caget, damdang, chamzo, label_make1, current_quarter, \
+        jira_key, point, mubiao
+
+
+def weekly_jira_set(emergency_item, emergency_list, jin_point, jin_aim,
+                    current_quarter):
+    for emergency_type in emergency_item:
+        i = 0
+        for emergency_detail in emergency_list:
+            point = jin_point[i]
+            mubiao = jin_aim[i]
+            damdang = jin_assignee[i]
+            chamzo = jin_chamzo[i]
+
+            epic_name = "[서xxxxxA팀][" + str(year) + "." + str(fenji) + "Q" \
+                        + "]" + " xxx관리- " + emergency_detail + " " \
+                        + emergency_type
+            epic = "\\" + "\\[서sssssA팀" + "\\" + "\\]" + "\\" + "\\[" \
+                   + str(year) + "." + str(fenji) + "Q" + "\\" + "\\]" \
+                   + " ss관리-" + emergency_detail + " " + emergency_type
+            search = "text ~ \"" + str(epic) + "\""
+            label_make1 = "서ssssA-" + emergency_detail
+            title_caget = str(before3_year_month) + ".W" + str(week) + " " \
+                + emergency_detail + " " + emergency_type
+
+            bigjira_set(search, epic_name, label_make1)
+            time.sleep(2)
+            print(str(i) + "번째")
+            jira_set(title_caget, damdang, chamzo, label_make1,
+                     current_quarter, jira_key, point, mubiao)
+
+            time.sleep(3)
+            i = i + 1
+
+
+if __name__ == "__main__":
+    emergency_item = ["긴ssssss"]
+    emergency_list = ["HOx", "HOx", "aa", "aaa",
+                      "ddddF", "ffff", "dddd", "ssss"]
+    jin_point = [emergency_sum1, emergency_sum2, emergency_sum3,
+                 emergency_sum4, emergency_sum5, emergency_sum6,
+                 emergency_sum9, emergency_sum10]
+    jin_aim = [emergency_aims1, emergency_aims2, emergency_aims3,
+               emergency_aims4, emergency_aims5, emergency_aims6,
+               emergency_aims9, emergency_aims10]
+    jin_assignee = ["xxxxx", "xxxxx", "xxxxx", "xxxxx",
+                    "xxxxx", "xxxxx", "xxxxx", "xxxxx"]
+    jin_chamzo = ["xxxxx", "xxxxx", "xxxxx", "xxxxx",
+                  "xxxxx", "xxxxx", "xxxxx", "xxxxx"]
+
+    weekly_jira_set(emergency_item, emergency_list, jin_point, jin_aim,
+                    current_quarter)
+    print("end")
+
+    workbook.close()
