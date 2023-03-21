@@ -1,0 +1,247 @@
+실습2
+
+1. cmd setting
+C:\Python_Jango_Quiz>cd myhome
+C:\Python_Jango_Quiz\myhome>C:\venv\myhome\Scripts\activate
+
+2. 앱 생성
+(myhome) C:\Python_Jango_Quiz\myhome>django-admin startapp chartAPP
+
+3. 앱 등록
+경로 : C:\Python_Jango_Quiz\myhome\config\setting.py
+
+'chartAPP.apps.ChartAPPConfig',
+
+
+4. url 설정 - 계층구조
+
+경로: C:\Python_Jango_Quiz\myhome\config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('chart/', include('chartAPP.urls')),
+]
+
+5. chartAPP - url설정
+
+경로: C:\Python_Jango_Quiz\myhome\chartAPP\urls.py (새로생성)
+
+from django.urls import path
+from chartAPP import views
+
+app_name = 'chartAPP'
+
+urlpatterns = [
+    path('', views.index1),
+    path('week/', views.index2),
+    path('month/', views.index3),
+    path('week/<int:week>/', views.week),
+    path('month/<month>/', views.month),
+]
+
+6. View정의
+
+경로: C:\Python_Jango_Quiz\myhome\chartAPP\views.py
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+def index1(request):
+    return HttpResponse("Hello")
+
+def index2(request):
+    return HttpResponse("week")
+
+def index3(request):
+    return HttpResponse("month")
+
+def week(request, week):
+    week_code = [10,20,30,40]
+
+    if week in week_code:
+        message = "{} Page Print" .format(week)
+
+    else:
+        message = "{} Page Not Found" .format(week)
+    
+    return HttpResponse(message)
+
+def month(request, month):
+    month_lst = ["01","03","05","07"]
+
+    if month in month_lst:
+        message = "{} Page Print" .format(month)
+
+    else:
+        message = "{} Page Not Found" .format(month)
+
+    return HttpResponse(message)
+
+
+7. 서버 실행 및 테스트
+
+http://127.0.0.1:8000/chart/
+http://127.0.0.1:8000/chart/week/
+http://127.0.0.1:8000/chart/week/10/
+http://127.0.0.1:8000/chart/week/20/
+http://127.0.0.1:8000/chart/week/30/
+http://127.0.0.1:8000/chart/week/40/ -> OK
+
+http://127.0.0.1:8000/chart/week/50/ -> NOT OK
+
+
+http://127.0.0.1:8000/chart/month/
+http://127.0.0.1:8000/chart/month/01/
+http://127.0.0.1:8000/chart/month/03/
+http://127.0.0.1:8000/chart/month/05/
+http://127.0.0.1:8000/chart/month/07/ -> OK
+
+http://127.0.0.1:8000/chart/month/10/  -> NOT OK
+
+
+-----------------------------------------------------------------------------------
+
+1. urls.py 패턴 삭제 views.py 함수 삭제
+
+경로: C:\project\mysite\MTV\urls.py 
+
+from django.urls import path
+from MTV import views
+
+app_name = 'MTV'
+
+urlpatterns = [
+    path('', views.index ),
+]
+
+
+경로: C:\project\mysite\MTV\views.py 
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+
+def index(request):
+    return HttpResponse("Hello, World. Django Index Page!")
+
+
+2. HTML 문서 작성
+
+경로: C:\project\mysite\MTV\views.py 
+
+def index(request):
+
+    HTML = '''
+    <html>
+    <head>
+    <title>MTV TEST PAGE</title>
+    </head>
+    <body>
+    <h1>Cilent Request -> Server Response</h1>
+    </body>
+    </html>
+    '''
+    return HttpResponse(HTML)
+
+3. 서버 실행 및 테스트 
+http://127.0.0.1:8000/MTV/
+
+
+
+4. template 디렉터리 경로 등록
+
+ 경로: C:\project\mysite\config\setting.py
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR/'templates'],
+        'APP_DIRS': True,
+]
+
+5. 디렉터리 및 파일 생성
+
+경로: C:\project\templates\MTV\indexs.html (새로 생성 - 경로 꼭 확인! )
+1) templates 폴더
+
+2) MTV 폴더
+
+3) indexs.html 파일
+
+4) 아래 코드 복붙
+<html>
+  <head>
+    <title>Templates Test</title>
+  </head>
+  <body>
+    <h1>Overview URL Link!</h1>
+      <h4>
+      <li><a href="http://127.0.0.1:8000/overview/index.html">
+        http://127.0.0.1:8000/overview/index.html</a></li>
+      <li><a href="http://127.0.0.1:8000/overview/python.html">
+        http://127.0.0.1:8000/overview/python.html</a></li>
+      <li><a href="http://127.0.0.1:8000/overview/django.html">
+        http://127.0.0.1:8000/overview/django.html</a></li>
+      </h4>
+
+    <h1>Document URL Link!</h1>
+      <h4>
+      <li><a href="http://127.0.0.1:8000/document/python/tutorial.html">
+        http://127.0.0.1:8000/document/python/tutorial.html</a></li>
+      <li><a href="http://127.0.0.1:8000/document/python/install.html">
+        http://127.0.0.1:8000/document/python/install.html</a></li>
+      <li><a href="http://127.0.0.1:8000/document/django/tutorial.html">
+        http://127.0.0.1:8000/document/django/tutorial.html</a></li>
+      <li><a href="http://127.0.0.1:8000/document/django/install.html">
+        http://127.0.0.1:8000/document/django/install.html</a></li>
+      </h4>
+  </body>
+</html>
+
+6. views 수정
+
+경로: C:\project\mysite\MTV\views.py 
+
+from django.shortcuts import render
+# from django.http import HttpResponse
+
+# Create your views here.
+
+def index(request):
+    return render(request,'MTV/indexs.html')
+
+
+7. 메인 페이지 구현
+
+경로: C:\project\mysite\config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+from MTV import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('MTV/', include('MTV.urls')),
+    path('',views.index),
+]
+
+8. 서버 실행 및 확인
+
+http://127.0.0.1:8000/
+http://127.0.0.1:8000/MTV/
+
+
+
+
+
+
+
+
+
