@@ -70,13 +70,7 @@ INSTALLED_APPS = [
 ]
 
 
-3. 개발 서버 구동
-python manage.py runserver
 
-4. 웹 브라우저 실행
-주소창에 http://127.0.0.1 입력 후 확인 
-
-5. 서버 종료 > 터미널에서 Ctrl + c 입력 
 
 6. 설정 변경  및 확인
 
@@ -90,6 +84,11 @@ USE_TZ = False
 
 개발 서버 구동
 python manage.py runserver
+4. 웹 브라우저 실행
+주소창에 http://127.0.0.1 입력 후 확인 
+
+5. 서버 종료 > 터미널에서 Ctrl + c 입력 
+
 
 
 7. 관리자 계정으로 로그인
