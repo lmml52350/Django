@@ -1,0 +1,585 @@
+
+Templates Inheritance
+
+
+1. 
+
+(1). C:\project\mysite\static\board(소문자로 변경)
+images 폴더 > 위의 경로에 복붙
+
+(2). C:\project\mysite\templates\Board
+html 파일 4개  위위 경로에복붙  
+
+(3). C:\project\mysite\templates
+common 폴더 > 위의 경로에 복붙
+
+
+
+2.
+
+C:\project\mysite\Board\urls.py
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.board_list, name = 'list'),
+    path('board_detail/', views.board_detail, name = 'detail'),
+]
+
+
+3.
+
+C:\project\mysite\Board\views.py
+
+from django.shortcuts import render
+
+# Create your views here.
+
+def board_list(request):
+    return render(request,'Board/board_list.html')
+
+def board_detail(request):
+    return render(request,'Board/board_detail.html')
+
+
+4.
+경로: C:\project\mysite\templates\Board\board_list.html
+
+{% load static %}
+<img src="{% static 'board/images/logo.png' %}" width="70" height="40" alt="">
+
+
+5.
+경로: C:\project\mysite\templates\Board\board_detail.html
+
+{% load static %}
+<img src="{% static 'board/images/logo.png' %}" width="70" height="40" alt="">
+
+
+
+6. 서버 실행 및 확인
+
+http://127.0.0.1:8000/
+http://127.0.0.1:8000/Board/
+http://127.0.0.1:8000/Board/board_detail/
+
+-------------------------------(16일)
+
+7. 
+
+경로: C:\project\mysite\Templates\board_base.html (새로 생성)
+
+
+8.
+
+경로: C:\project\mysite\Templates\board_base.html (새로 생성)
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap CDN URL -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  
+  <!-- Fontawesome URL -->
+  <script src="https://kit.fontawesome.com/53e4af2e34.js" crossorigin="anonymous"></script>
+  
+  <!-- pagination Style 변경 -->
+  <style>
+    .pagination > li > a
+    {
+      background-color: white;
+      color: #000;
+    }
+    .pagination > .active > a
+    {
+        color: white;
+        background-color: #212529 !Important;
+        border: solid 1px #212529 !Important;
+    }
+  </style>
+  <title>Django WEB</title>
+</head>
+
+<body>
+
+{% include "board_navbar.html" %}
+{% block content %}
+{% endblock %}
+
+</body>
+
+</html>
+
+
+9.
+
+경로: C:\project\mysite\Templates\board_navbar.html (새로 생성)
+
+{% load static %}
+
+<!-- Navbar 영역 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white container my-3">
+<div class="container">
+
+    <!-- Logo 영역 -->
+    <a class="mb-2 navbar-brand" href="#"><img src="{% static 'board/images/logo.png' %}" width="70" height="40" alt=""> Python DJango</a>
+
+    <!-- 햄버거 메뉴 영역 (data-target : Menu ID)-->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content 영역 -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+    <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="me-2">
+        <a class="nav-link" href="#"><i class="fa-solid fa-user me-2"></i>로그인</a>
+        </li>
+        <li class="me-2">
+        <a class="nav-link" href="#"><i class="fa-solid fa-right-from-bracket me-2"></i>로그아웃</a>
+        </li>
+        <li>
+        <a class="nav-link" href="#"><i class="fa-solid fa-user-plus me-2"></i>회원가입</a>
+        </li>
+    </ul>
+    </div>
+
+</div>
+</nav>
+
+
+10.
+
+경로: C:\project\mysite\Templates\Board\board_detail.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+  <section class="board_detail-block">
+    <div class="container mt-3">
+    <div class="card border-dark mb-3">
+      <div class="card-header">
+        <h4 class="pt-1">Board Title</h4>
+        <p class="pt-1">Created by Admin on January 1, 2022</p>
+      </div>
+      <div class="card-header">
+        <a href="#" class="text-decoration-none text-muted" role="button" download>
+          첨부파일 : <i class="fa-solid fa-file-lines me-2"></i>FileName
+        </a>
+      </div>
+      <div class="card-body text-dark">
+        <p class="card-text">Board Contents</p>
+        <p class="card-text">Board Contents</p>
+        <p class="card-text">Board Contents</p>
+        <p class="card-text">Board Contents</p>
+        <p class="card-text">Board Contents</p>
+        <p class="card-text">Board Contents</p>
+        <div class="mt-4">
+
+        </div>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <a href="#" class="btn btn-outline-dark">목록</a>
+        <span>
+          <a href="#" class="btn btn-outline-dark">수정</a>
+          <a href="#" class="btn btn-outline-dark">삭제</a>
+        </span>
+      </div>
+    </div>
+    </div>
+  </section>
+
+
+{% endblock %}
+
+
+11.
+
+경로: C:\project\mysite\Templates\Board\board_form_update.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+
+<section class="board_form-block">
+<div class="container mt-3">
+  <form method="post" enctype="multipart/form-data">
+    <div class="card">
+      <div class="card-header input-group">
+        <span class="input-group-text">제목 입력</span>
+        <input type="text" class="form-control" name="username" placeholder="제목을 입력하세요" id="username" value="">
+      </div>
+      <div class="card-header input-group">
+        <input type="file" class="form-control" name="file_upload" id="file_upload" value="">
+      </div>
+      <div class="card-body">
+        <textarea class="form-control" name="content" rows="20" placeholder="내용을 입력하세요" style="resize: none;"></textarea>
+      </div>
+      <button type="submit" class="btn btn-outline-dark">게시글 수정</button>
+    </div>
+  </form>
+</div>
+</section>
+
+
+{% endblock %}
+
+
+12.
+
+경로: C:\project\mysite\Templates\Board\board_form.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+
+  <section class="board_form-block">
+  <div class="container mt-3">
+    <form method="post" enctype="multipart/form-data">
+      <div class="card">
+        <div class="card-header input-group">
+          <span class="input-group-text">제목 입력</span>
+          <input type="text" class="form-control" name="username" placeholder="제목을 입력하세요" id="username" value="">
+        </div>
+        <div class="card-header input-group">
+          <input type="file" class="form-control" name="file_upload" id="file_upload" value="">
+        </div>
+        <div class="card-body">
+          <textarea class="form-control" name="content" rows="20" placeholder="내용을 입력하세요" style="resize: none;"></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline-dark">게시글 등록</button>
+      </div>
+    </form>
+  </div>
+  </section>
+
+
+{% endblock %}
+
+
+13.
+
+경로: C:\project\mysite\Templates\Board\board_list.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<!-- Board 영역 -->
+<div class="container">
+  <table class="table table-striped">
+
+    <!-- Table Head 영역 -->
+    <thead class="thead-dark">
+      <tr class="text-center">
+        <th>번호</th>
+        <th style="width:50%">제목</th>
+        <th>글쓴이</th>
+        <th>작성일</th>
+      </tr>
+    </thead>
+
+    <!-- Table Body 영역 -->
+    <tbody>
+      <tr class="text-center">
+        <td>5</td>
+        <td>TEST</td>
+        <td>User5</td>
+        <td>2022-01-01</td>
+      </tr>
+      <tr class="text-center">
+        <td>4</td>
+        <td>TEST</td>
+        <td>User4</td>
+        <td>2022-01-01</td>
+      </tr>
+      <tr class="text-center">
+        <td>3</td>
+        <td>TEST</td>
+        <td>User3</td>
+        <td>2022-01-01</td>
+      </tr>
+      <tr class="text-center">
+        <td>2</td>
+        <td>TEST</td>
+        <td>User2</td>
+        <td>2022-01-01</td>
+      </tr>
+      <tr class="text-center">
+        <td>1</td>
+        <td>TEST</td>
+        <td>User1</td>
+        <td>2022-01-01</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <!-- pagination 영역 -->
+  <ul class="pagination justify-content-center">
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">이전</a>
+    </li>
+    <li class="page-item active" aria-current="page">
+      <a class="page-link" data-page="#" href="#">1</a>
+    </li>  
+    <li class="page-item" aria-current="page">
+      <a class="page-link" data-page="#" href="#">2</a>
+    </li>  
+    <li class="page-item" aria-current="page">
+      <a class="page-link" data-page="#" href="#">3</a>
+    </li>  
+    <li class="page-item" aria-current="page">
+      <a class="page-link" data-page="#" href="#">4</a>
+    </li>  
+    <li class="page-item" aria-current="page">
+      <a class="page-link" data-page="#" href="#">5</a>
+    </li>  
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">다음</a>
+    </li>
+  </ul>
+</div>
+
+{% endblock %}
+
+14.
+경로: C:\project\mysite\Templates\common\login.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="login-block">
+<div class="container">
+  <div class="row">
+    <div class="card col-lg-4">
+      <div class="card-body">
+        <h1 class="text-center mt-4 mb-5">LOGIN</h1>
+        <form method="post" action="#">
+          <div class="input-group mb-4">
+            <input type="text" class="form-control" name="username" id="username" placeholder="Enter User ID" value="">
+          </div>
+
+          <div class="input-group mb-3">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Enter User Password" value="">
+          </div>
+
+          <div class="d-grid gap-1">
+            <button type="submit" class="btn btn-outline-dark mt-4">로그인</button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer text-muted text-center">
+        <i class="fs-2 mx-2 fa-brands fa-instagram-square"></i>
+        <i class="fs-2 mx-2 fa-brands fa-facebook-square"></i>
+        <i class="fs-2 mx-2 fa-brands fa-google"></i>
+        <i class="fs-2 mx-2 fa-brands fa-apple"></i>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card">
+        <img class="card-img-top" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="...">
+      </div>
+    </div> 
+  </div>
+</div>
+</section>
+
+{% endblock %}
+
+15.
+경로: C:\project\mysite\Templates\common\signup.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="signup-block">
+  <div class="container">
+    <div class="row">
+      <div class="card col-lg-4">
+        <div class="card-body">
+          <h1 class="text-center mt-2 mb-5">SIGNUP</h1>
+          <form method="POST" class="post-form">
+
+            <div class="input-group mb-4">
+              <input type="text" class="form-control" name="username" id="username" placeholder="ID" value="">
+            </div>
+            <div class="input-group mb-4">
+              <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" value="">
+            </div>
+            <div class="input-group mb-4">
+              <input type="password" class="form-control" name="password2" id="password2" placeholder="Re-Entry Password" value="">
+            </div>
+            <div class="input-group mb-4">
+              <input type="email" class="form-control" name="email" id="email" placeholder="E-mail Address" value="">
+            </div>
+
+            <div class="d-grid gap-1">
+              <button type="submit" class="btn btn-outline-dark mt-2">회원가입</button>
+              <button type="reset" class="btn btn-outline-dark mt-2">취소</button>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer text-muted text-center">
+          <i class="fs-2 mx-2 fa-brands fa-instagram-square"></i>
+          <i class="fs-2 mx-2 fa-brands fa-facebook-square"></i>
+          <i class="fs-2 mx-2 fa-brands fa-google"></i>
+          <i class="fs-2 mx-2 fa-brands fa-apple"></i>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card">
+          <img class="card-img-top" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="...">
+        </div>
+      </div> 
+    </div>
+  </div>
+  </section>
+
+{% endblock %}
+
+
+16. 서버 실행 및 확인
+
+http://127.0.0.1:8000/ 
+http://127.0.0.1:8000/Board/
+http://127.0.0.1:8000/Board/board_detail/
+
+
+--------------------------------------------------------------------------------
+
+1. common APP 생성 및 등록
+
+(mysite) C:\project\mysite>django-admin startapp common 
+
+경로: C:\project\mysite\Config\setting.py 
+
+    'common.apps.CommonConfig',
+
+
+2.
+
+경로: C:\project\mysite\Config\setting.py 
+
+import os
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+3.
+
+경로: C:\project\mysite\Config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+from Board import views
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('Board/', include('Board.urls')),
+    # path('common/',include('common.urls')),
+    path('',views.board_list),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+4.
+
+경로: C:\project\mysite\Board\models.py
+
+from django.db import models
+from django.contrib.auth.models import User
+
+# Create your models here.
+
+class Board(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField()                          /media/
+    file_upload = models.FileField(upload_to='board/data/%Y/%m/%d/', blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null=True, blank= True)
+
+    def __str__(self):
+        return '[PK:{}] - {} :: {}'.format(self.pk, self.title, self.author)
+    
+
+
+
+5.
+
+경로: C:\project\mysite\Board\admin.py
+
+from django.contrib import admin
+from Board.models import Board
+
+# Register your models here.
+
+admin.site.register(Board)
+
+
+6.
+
+(mysite) C:\project\mysite>python manage.py makemigrations
+Migrations for 'Board':
+  Board\migrations\0001_initial.py
+    - Create model Board
+
+(mysite) C:\project\mysite>python manage.py migrate       
+Operations to perform:
+  Apply all migrations: Board, admin, auth, contenttypes, sessions
+Running migrations:
+  Applying Board.0001_initial... OK
+
+
+7.
+
+(mysite) C:\project\mysite>python manage.py runserver
+
+
+
+-----------------------------------------------------------------------
+
+회원 관리
+
+1.
+
+경로: C:\project\mysite\Config\urls.py
+
+    path('common/',include('common.urls')),
+
+
+
+2. 
+
+경로: C:\project\mysite\common\urls.py (새로 생성)
+
+from django.urls import path
+from django.contrib.auth import views as auth_views
+from common import views
+
+app_name = 'common'
+
+urlpatterns = [
+    path('login/', auth_views.LoginView
+         .as_view(template_name='common/login.html', name='login')),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('signup/', views.signup, name = 'signup'),
+]
+
+
+
