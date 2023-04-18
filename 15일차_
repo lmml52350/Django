@@ -1,0 +1,265 @@
+12. views
+
+
+from django.shortcuts import render, get_object_or_404
+from vote.models import Question, Choice
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+
+# Create your views here.
+
+def index(request):
+    question_list = Question.objects.all().order_by()
+    context = {'question_list':question_list} 
+
+    # print(context['question_list'])
+    # print(type(context['question_list'][0]))
+    # print(context['question_list'][0].id)
+    # print(context['question_list'][0].question_text)
+    # print(context['question_list'][0].data)
+
+    return render(request, 'vote/index.html', context)
+
+
+def detail(request, question_id):
+    question = get_object_or_404(Question,pk=question_id)
+    return render(request, 'vote/detail.html', {'question':question})
+
+def vote(request, question_id):
+    question = get_object_or_404(Question,pk=question_id)
+
+    try:
+        select_choice = question.choice_set.get(pk=request.POST['choice'])
+    
+    except (KeyError, Choice.DoesNotExist):
+        context = {'question':question, 'error_msg':"You didn't select a choice"}
+        return render(request, 'vote/detail.html', context)
+    
+    else:
+        select_choice.votes += 1
+        select_choice.save()
+        return HttpResponseRedirect(reverse('vote:result',args=(question.id,)))
+
+def result(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'vote/result.html',{'question':question})
+
+13.
+
+<html>
+    <head>
+        <title>Vote Project</title>
+    </head>
+
+    <body>
+        <h1>{{question.question.text}}</h1>
+        {% if error_msg %} <p><strong> {{error_msg}} </strong></p> {% endif %}
+        
+        <form action="{% url 'vote:vote' question.id %}" method="post">
+            {% csrf_token %}
+            {% for choice in question.choice_set.all %}
+            <input type="radio" name="choice" id="choice {{forloop.counter}}" value="{{choice.id}}" />
+            <label for="choice{{ forloop.counter }}"> {{choice.choice_text}} </label><br>
+            {% endfor %}
+            <input type="submit" value="vote"/>
+        </form>
+    </body>
+</html>
+
+
+15.
+
+<html>
+<head>
+    <title>Vote Project</title>
+</head>
+
+<body>
+    <h1>{{ question.question_text }}</h1>
+    <ul>
+        {% for choice in question.choice_set.all %}
+        <li>{{ choice.choice_text }} >> {{ choice.votes }}</li><br>
+        {% endfor %}
+
+        <a href="{% url 'vote:detail' question.id %}">Vote Again? </a>
+    </ul>
+</body>
+
+</html>
+
+-----------------------------------------------------------------------------
+앱삭제
+
+-----------------------------------------------------------------------------
+
+Django Static Dir Test
+
+1. 
+(mysite) C:\project\mysite>django-admin startapp Board 
+
+경로: C:\project\mysite\config\setting.py
+    'Board.apps.BoardConfig',
+
+2.
+
+(1).
+경로: C:\project\mysite\config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+from Board import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('Board/', include('Board.urls')),
+    path('',views.board_list),
+]
+
+(2).
+
+경로: C:\project\mysite\Board\urls.py (새로 생성)
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.board_list, name = 'list'),
+]
+
+3.
+
+경로: C:\project\mysite\Board\views.py
+
+from django.shortcuts import render
+
+# Create your views here.
+
+def board_list(request):
+    return render(request,'Board/index.html')
+
+
+4.
+
+경로: C:\project\mysite\templates\Board(새로생성)
+
+압축 풀어놓은 file 및 Dir 복붙 > 경로 확인
+
+
+5. 서버 실행 및 확인 > 에러
+
+정적 파일 관리
+
+6. 
+
+경로: C:\project\mysite\config\setting.py
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+
+7. 
+
+경로: C:\project\mysite\static(새로 생성)
+경로: C:\project\mysite\static\Board(새로 생성)
+
+css, images 폴더 위의 경로 하위로 이동
+
+
+8.
+
+경로: C:\project\mysite\templates\Board\index.html
+
+{% load static %}
+
+<link href="{% static 'Board/css/styles.css' %}" rel="stylesheet" />
+
+<img src="{% static 'Board/images/img.jpg' %}" alt="Error">
+
+
+9. 서버 실행 및 확인
+
+
+10. 삭제
+
+C:\project\mysite\templates\Board
+
+index.html 파일 삭제 
+
+C:\project\mysite\static\Board
+
+css & images 폴더 삭제
+
+
+----------------------------------------------------------------------
+Templates Inheritance
+
+
+1. 
+
+(1). C:\project\mysite\static\board(소문자로 변경)
+images 폴더 > 위의 경로에 복붙
+
+(2). C:\project\mysite\templates\Board
+html 파일 4개  위위 경로에복붙  
+
+(3). C:\project\mysite\templates
+common 폴더 > 위의 경로에 복붙
+
+
+
+2.
+
+C:\project\mysite\Board\urls.py
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.board_list, name = 'list'),
+    path('board_detail/', views.board_detail, name = 'detail'),
+]
+
+
+3.
+
+C:\project\mysite\Board\views.py
+
+from django.shortcuts import render
+
+# Create your views here.
+
+def board_list(request):
+    return render(request,'Board/board_list.html')
+
+def board_detail(request):
+    return render(request,'Board/board_detail.html')
+
+
+4.
+경로: C:\project\mysite\templates\Board\board_list.html
+
+{% load static %}
+<img src="{% static 'board/images/logo.png' %}" width="70" height="40" alt="">
+
+
+5.
+경로: C:\project\mysite\templates\Board\board_detail.html
+
+{% load static %}
+<img src="{% static 'board/images/logo.png' %}" width="70" height="40" alt="">
+
+
+
+6. 서버 실행 및 확인
+
+http://127.0.0.1:8000/
+http://127.0.0.1:8000/Board/
+http://127.0.0.1:8000/Board/board_detail/
+
+
