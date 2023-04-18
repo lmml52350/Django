@@ -1,0 +1,187 @@
+-  가상 환경 구축
+
+- 장고 프로젝트 생성
+
+1. 프로젝트 디렉터리 생성
+mkdir project
+cd project
+
+2. 프로젝트 디렉터리 실행  > Code로 열기 실행
+
+3. 터미널 실행 > Ctrl + ` > Command prompt
+
+4. 장고 프로젝트를 담을 디렉터리 생성
+mkdir mysite
+cd mysite
+
+5. 가상환경 진입
+cd C:\venvs\mysite\Scripts
+activate
+
+6. 장고 프로젝트 생성
+(mysite) C:\mysite>cd C:\project\mysite 
+
+(mysite) C:\project\mysite>django-admin startproject config .
+
+
+7. migrate 명령어로 DB연동
+(mysite) C:\project\mysite>python manage.py migrate
+
+
+8. 관리자 계정 생성
+(mysite) C:\project\mysite>python manage.py createsuperuser       
+Username (leave blank to use 'kgitbank'): admin
+Email address: admin@localhost.com
+Password: 
+Password (again): 
+The password is too similar to the username.
+This password is too short. It must contain at least 8 characters.This password is too common.
+Bypass password validation and create user anyway? [y/N]: y
+Superuser created successfully.
+
+
+
+-------------------------------------------------------------------------
+
+- 장고 앱 생성
+
+1. MTV 앱 생성
+django-admin startapp MTV
+
+2. 앱 등록
+
+경로: C:\project\mysite\config\setting.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'MTV.apps.MtvConfig',
+]
+
+
+3. 개발 서버 구동
+python manage.py runserver
+
+4. 웹 브라우저 실행
+주소창에 http://127.0.0.1 입력 후 확인 
+
+5. 서버 종료 > 터미널에서 Ctrl + c 입력 
+
+6. 설정 변경  및 확인
+
+경로: C:\project\mysite\config\setting.py
+
+LANGUAGE_CODE = 'ko-kr'
+
+TIME_ZONE = 'Asia/Seoul'
+
+USE_TZ = False
+
+개발 서버 구동
+python manage.py runserver
+
+
+7. 관리자 계정으로 로그인
+
+1) 서버 실행 
+2) http://127.0.0.1:8000/admin입력
+3) id: admin / password: admin 입력 및 로그인 클릭
+
+
+8. 포트 번호 변경
+
+127.0.0.1은 현재 컴퓨터를 가르키는 Ip주소(Localhost - 개발 서버)
+
+Port 는 IP 내에서 애플리케이션 상호 구분(프로세스를 구분)을 위해 사용되는 번호
+
+0 ~ 1023 : 잘 알려진 Well-Known Port 라고 부르며, 웹 서버나 메일 서버 등의 일반적인 프로그램들이 사용합니다.
+1024 ~ 49151 : Registered Port 라고 부르며, 잘 알려져 있는 프로그램들이 아닌 다른 용도의 프로그램들이 사용합니다.
+49152 ~ 65535 : 동적 포트(Dynamic Port)로 서버가 클라이언트를 식별할 때 사용합니다.
+
+- 포트 번호 변경
+(mysite) C:\project\mysite>python manage.py runserver localhost:7000
+
+- 개발 서버 실행
+http://127.0.01:7000/
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+실습
+
+
+
+- 장고 프로젝트 생성
+C:\>mkdir Python_Jango_Quiz
+C:\>cd Python_Jango_Quiz
+
+가상환경 구축(venv) 
+cd / 
+mkdir venv
+cd venv
+python -m venv myhome
+
+cd C:\venv\myhome\Scripts
+activate
+
+C:\venv\myhome\Scripts>python -m django --version
+
+activate
+(myhome) C:\venv\myhome\Scripts>python -m pip install django==3.1.3
+(myhome) C:\venv\myhome\Scripts>python -m pip install --upgrade pip
+(myhome) C:\venv\myhome\Scripts>deactivate
+(myhome) C:\Python_Jango_Quiz>mkdir myhome
+(myhome) C:\Python_Jango_Quiz>cd myhome
+(myhome) C:\Python_Jango_Quiz\myhome>django-admin startproject config  .
+
+python manage.py migrate
+python manage.py createsuperuser
+
+
+- 장고 앱 생성
+
+(myhome) C:\Python_Jango_Quiz\myhome>django-admin startapp MyWeb
+
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'MyWeb.apps.MywebConfig',
+]
+
+LANGUAGE_CODE = 'ko-kr'
+
+TIME_ZONE = 'Asia/Seoul'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = False
+
+서버 구동 및 확인
+(myhome) C:\Python_Jango_Quiz\myhome>python manage.py runserver
+
+포트 번호 변경
+python manage.py runserver localhost:7000
+
+개발 서버 실행
+http://127.0.01:7000/
+
+관리자 계정 로그인 및 계정 정보 확인 > 이메일 없음
+http://localhost:7000/admin/
+
+
+
+
+
+
+
