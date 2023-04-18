@@ -1,0 +1,313 @@
+회원 관리
+
+1.
+
+경로: C:\project\mysite\Config\urls.py
+
+    path('common/',include('common.urls')),
+
+
+
+2. 
+
+경로: C:\project\mysite\common\urls.py (새로 생성)
+
+from django.urls import path
+from django.contrib.auth import views as auth_views
+from common import views
+
+app_name = 'common'
+
+urlpatterns = [
+    path('login/', auth_views.LoginView.as_view(template_name='common/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+#    path('signup/', views.signup, name = 'signup'),
+]
+
+
+3.
+
+경로: C:\project\mysite\templates\board_navbar.html
+
+<a class="nav-link" href="{% url 'common:login' %}"><i class="fa-solid fa-user me-2"></i>로그인</a>
+
+
+
+4.
+
+경로: C:\project\mysite\templates\common\login.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="login-block">
+<div class="container">
+  <div class="row">
+    <div class="card col-lg-4">
+      <div class="card-body">
+        <h1 class="text-center mt-4 mb-5">LOGIN</h1>
+        <form method="post" action="{% url 'common:login' %}">
+        {% csrf_token %}
+        {% include "form_errors.html" %}
+          <div class="input-group mb-4">
+            <input type="text" class="form-control" name="username" id="username" placeholder="Enter User ID" value="{{ form.username.value | default_if_none:'' }}">
+          </div>
+
+          <div class="input-group mb-3">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Enter User Password" value="{{ form.password.value | default_if_none:'' }}">
+          </div>
+
+          <div class="d-grid gap-1">
+            <button type="submit" class="btn btn-outline-dark mt-4">로그인</button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer text-muted text-center">
+        <i class="fs-2 mx-2 fa-brands fa-instagram-square"></i>
+        <i class="fs-2 mx-2 fa-brands fa-facebook-square"></i>
+        <i class="fs-2 mx-2 fa-brands fa-google"></i>
+        <i class="fs-2 mx-2 fa-brands fa-apple"></i>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card">
+        <img class="card-img-top" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="...">
+      </div>
+    </div> 
+  </div>
+</div>
+</section>
+
+{% endblock %}
+
+
+5.
+
+경로: C:\project\mysite\templates\form_errors.html(새로 생성)
+
+{% if form.errors %}
+<!-- Field Input Error -->
+{% for field in form %}
+    {% for error in field.errors %}
+     <div class="alert alert-danger">
+        <strong>{{ filed.label }}</strong> {{ error }}
+     </div>
+    {% endfor %}
+{% endfor %}
+
+<!-- Non Field Error -->
+{% for error in form.non_field_errors %}
+<div class="alert alert-danger">
+    <strong>{{ error }}</strong>
+</div>
+{% endfor %}
+{% endif %}
+
+
+6.
+
+경로:C:\project\mysite\config\setting.py
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+
+7. 
+
+경로: C:\project\mysite\templates\board_navbar.html
+
+{% load static %}
+
+<!-- Navbar 영역 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white container my-3">
+<div class="container">
+
+    <!-- Logo 영역 -->
+    <a class="mb-2 navbar-brand" href="#"><img src="{% static 'board/images/logo.png' %}" width="70" height="40" alt=""> Python Django</a>
+
+    <!-- 햄버거 메뉴 영역 (data-target : Menu ID)-->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content 영역 -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+    <ul class="navbar-nav mb-2 mb-lg-0">
+    {% if user.is_anonymous %}
+        <li class="me-2">
+        <a class="nav-link" href="{% url 'common:login' %}"><i class="fa-solid fa-user me-2"></i>로그인</a>
+        </li>
+
+        <li>
+        <a class="nav-link" href="#"><i class="fa-solid fa-user-plus me-2"></i>회원가입</a>
+        </li>
+    {% else %}
+        <li class="me-2">
+            <a class="nav-link" href="{% url 'common:logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i>로그아웃 [{{ user.username }}]</a>
+        </li>
+    {% endif %}
+    </ul>
+    </div>
+
+</div>
+</nav>
+
+
+8. 서버 실행 및 테스트
+
+
+
+
+------------------------------------------------------------------------------
+
+회원 가입
+
+9.     
+
+경로: C:\project\mysite\common\urls.py
+
+path('signup/', views.signup, name = 'signup'), 
+
+
+10.
+
+경로: C:\project\mysite\templates\board_navbar.html
+
+        <li>
+        <a class="nav-link" href="{% url 'common:signup' %}"><i class="fa-solid fa-user-plus me-2"></i>회원가입</a>
+        </li>
+
+11.
+
+경로: C:\project\mysite\common\forms.py (새로 생성)
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+class UserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ("username","password1","password2","email")
+
+
+
+12.
+
+경로: C:\project\mysite\common\views.py
+
+from django.shortcuts import render, redirect
+from common.forms import UserForm
+from django.contrib.auth import authenticate, login
+
+# Create your views here.
+
+def signup(request):
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username = username, password = raw_password)
+            login(request,user)
+            return redirect('/')
+        
+    else:
+        form = UserForm()
+
+    return render(request, 'common/signup.html', {'form':form})
+
+
+
+13.
+
+C:\project\mysite\templates\common\signup.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="signup-block">
+  <div class="container">
+    <div class="row">
+      <div class="card col-lg-4">
+        <div class="card-body">
+          <h1 class="text-center mt-2 mb-5">SIGNUP</h1>
+          <form method="POST" class="post-form" action="{% url 'common:signup' %}">
+          {% csrf_token %}
+          {% include "form_errors.html" %}
+            <div class="input-group mb-4">
+              <input type="text" class="form-control" name="username" id="username" placeholder="ID" value="{{ form.username.value | default_if_none:'' }}">
+            </div>
+            <div class="input-group mb-4">
+              <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" value="{{ form.password1.value | default_if_none:'' }}">
+            </div>
+            <div class="input-group mb-4">
+              <input type="password" class="form-control" name="password2" id="password2" placeholder="Re-Entry Password" value="{{ form.password2.value | default_if_none:'' }}">
+            </div>
+            <div class="input-group mb-4">
+              <input type="email" class="form-control" name="email" id="email" placeholder="E-mail Address" value="{{ form.email.value | default_if_none:'' }}">
+            </div>
+
+            <div class="d-grid gap-1">
+              <button type="submit" class="btn btn-outline-dark mt-2">회원가입</button>
+              <button type="reset" class="btn btn-outline-dark mt-2">취소</button>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer text-muted text-center">
+          <i class="fs-2 mx-2 fa-brands fa-instagram-square"></i>
+          <i class="fs-2 mx-2 fa-brands fa-facebook-square"></i>
+          <i class="fs-2 mx-2 fa-brands fa-google"></i>
+          <i class="fs-2 mx-2 fa-brands fa-apple"></i>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card">
+          <img class="card-img-top" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="...">
+        </div>
+      </div> 
+    </div>
+  </div>
+  </section>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+class BoardDetail(DetailView):
+#object 라는 객체가 생긴다 
+-----------------------------------------
+100개 빠르게 생성
+
+# from Board.models import Board
+# from django.contrib.auth.models import User
+
+# for i in range(100):
+#     p = Board(title="Test_Board_{}".format(i), content="Board Test Contnt",author=User.objects.get(id=1))
+#     p.save()
+
+
+
+class BoardList(ListView):
+#object_list 라는 객체가 생긴다 
+
+page_obj 라는 객체를 생선된다
+
+
+
+
+page_obj.paginator.count      전체게시물 개수
+page_obj.paginator.per_page   페이지당표시개수
+page_obj.paginator.num_page   마지막페이지 번호
+page_obj.paginator.page_range 전체페이지
+page_obj.number			현재 페이지
+page_obj.previous_page_number 이전페이지 번호
+page_obj.has_previous         이전페이지 존재유무
+
