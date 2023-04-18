@@ -1,0 +1,356 @@
+
+15. 데이터 수정(Update)
+
+
+def data_create():
+    Board_data = Board(title="Django Project", content="Django Project Model Data Create Test" )
+    Board_data.save()
+    print(Board.objects.all())
+
+def data_modify():
+    Board_data = Board.objects.get(title='Django Project')
+    Board_data.title = 'Django Model Test'
+    Board_data.save()
+    print(Board.objects.all())
+
+if __name__ == "__main__":
+    data_create()
+    data_modify()
+
+
+
+16. 데이터의 속성을 조회
+
+def data_object():
+    Board_object = Board.objects.get(title='Board Title')
+    print("ID(pk): {}".format(Board_object.id))
+    print("Title: {}".format(Board_object.title))
+    print("Content: {}".format(Board_object.content))
+    print("Create_data: {}".format(Board_object.create_date))
+    print("Modify_Data: {}".format(Board_object.modify_date))
+
+
+ID(pk): 1
+Title: Board Title
+Content: Board Contents~~~
+Board Contents~~~
+Board Contents~~~
+Board Contents~~~
+Board Contents~~~
+Create_data: 2023-03-23 14:16:25.736681
+Modify_Data: 2023-03-23 14:16:25.736681
+
+
+17. model 정의
+
+경로: C:\project\mysite\MTV\models.py
+
+class Question(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null=True, blank= True)
+
+    def __str__(self):
+        return self.title
+    
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    content = models.TextField()
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        return self.content
+
+
+18. admin에 테이블 등록
+
+경로: C:\project\mysite\MTV\admin.py
+
+from django.contrib import admin
+from .models import Board, Question, Answer
+
+# Register your models here.
+
+admin.site.register(Board)
+admin.site.register(Question)
+admin.site.register(Answer)
+
+
+
+19. migration 작업
+
+(mysite) C:\project\mysite>python manage.py makemigrations
+Migrations for 'MTV':
+  MTV\migrations\0002_answer_question.py
+    - Create model Question
+    - Create model Answer
+
+(mysite) C:\project\mysite>python manage.py migrate       
+Operations to perform:
+  Apply all migrations: MTV, admin, auth, contenttypes, sessions
+Running migrations:
+  Applying MTV.0002_answer_question... OK
+
+
+
+20. 서버 실행 및 확인
+
+테이블 확인
+
+질문 1개 등록
+QUESTION
+	Job Question
+
+답변 3개 등록
+ANSWER
+	Student
+	Soccer Player
+	Professor
+
+
+
+
+21. 관계 설정을 이용한 데이터 조회 (Select)
+
+
+def R_select():
+    Q = Question.objects.get(id=1)
+    print("ID(pk): {}".format(Q.id))
+    print("Title: {}".format(Q.title))
+    print("Content: {}".format(Q.content))
+
+    print("Answer Count: {}".format(Q.answer_set.count()))
+    print("Answer List: {}".format(Q.answer_set.all()))
+    print("Answer Get: {}".format(Q.answer_set.get(content__contains='Professor')))
+    print("Answer Filter: {}".format(Q.answer_set.filter(content__contains='Soccer')))
+
+
+ID(pk): 1
+Title: Job Question
+Content: What's Your Job?
+
+Answer Count: 3
+Answer List: <QuerySet [<Answer: Professor>, <Answer: Soccer Player>, <Answer: Student>]>
+Answer Get: Professor
+Answer Filter: <QuerySet [<Answer: Soccer Player>]>
+
+
+
+22. 관계설정을 이용한 데이터 생성 및 삭제 
+
+def R_create():
+    Q = Question.objects.get(id=1)
+    Q.answer_set.create(content="Office Worker")
+    print("Answer List: {}".format(Q.answer_set.all()))
+
+def R_delete():
+    Q = Question.objects.get(id=1)
+    A = Answer.objects.get(content__contains='Office Worker')
+    A.delete()
+    print("Answer List: {}".format(Q.answer_set.all()))
+
+if __name__ == "__main__":
+    R_create()
+    R_delete()
+
+
+Answer List: <QuerySet [<Answer: Professor>, <Answer: Soccer Player>, <Answer: Student>, <Answer: Office Worker>]>
+Answer List: <QuerySet [<Answer: Professor>, <Answer: Soccer Player>, <Answer: Student>]>
+
+
+
+23. 서버 실행
+
+질문 삭제시 답변도 모두 삭제 되는것을 확인(연결구조)
+
+------------------------------------------------------------------------------------------------------------
+
+투표 사이트 제작
+
+
+1. vote 앱 생성 및 등록
+
+앱 생성
+(mysite) C:\project\mysite>django-admin startapp vote
+
+
+등록
+경로 : C:\project\mysite\config\setting.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'MTV.apps.MtvConfig',
+    'vote.apps.VoteConfig',
+]
+
+
+
+2. model 정의
+
+경로 : C:\project\mysite\vote\models.py
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    data = models.DateField()
+
+    def __str__(self):
+        return self.question_text
+    
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.choice_text
+
+
+
+3. admin에 등록
+
+경로: C:\project\mysite\vote\admin.py
+
+from django.contrib import admin
+from .models import Question,Choice
+
+# Register your models here.
+
+admin.site.register(Question)
+admin.site.register(Choice)
+
+
+
+4. migration 작업
+
+(mysite) C:\project\mysite>python manage.py makemigrations
+Migrations for 'vote':
+  vote\migrations\0001_initial.py
+    - Create model Question      
+    - Create model Choice        
+
+(mysite) C:\project\mysite>python manage.py migrate       
+Operations to perform:
+  Apply all migrations: MTV, admin, auth, contenttypes, sessions, vote
+Running migrations:
+  Applying vote.0001_initial... OK
+
+
+
+5. 서버 실행 및 확인
+
+질문 3개 추가
+QUESTION
+	Where do you live?
+	Who do you like best?
+	What is your hobby?
+
+답변 3개 추가
+CHOICE(What is your hobby?)
+	Climbing
+	Soccer
+	Reading
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+Vote project에서는 3개의 페이지가 필요하다. index.html detail.html result.html
+각 페이지들을 구성하는 urlconf, view, Template 코드를 작성한다.
+url요청부터 응답까지의 처리 흐름을 파악후 해당 흐름에 맞는 로직을 설계한다.
+
+
+/Vote/ > index func > index.html
+/Vote/PK > detail.func > detail.html
+/Vote/PK/vote > vote.func
+
+
+6. config > urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+#from MTV import views
+from vote import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('MTV/', include('MTV.urls')),
+    path('vote/', include('vote.urls')),   # 추가
+    path('', views.index)
+]                    
+
+
+7. vote > urls.py 
+
+from django.urls import path
+from . import views
+
+app_name = 'vote'
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('<int:question_id>', views.detail, name='detail'),
+    path('<int:question_id>/vote/', views.vote, name='vote'),
+    path('<int:question_id>/result/', views.result, name='result'),
+]                  
+
+vote > view.py
+
+def index(request):
+    question_list = Question.objects.all().order_by()  #objects.all() 데이터조회
+    context ={'question_list' : question_list}  # 딕셔너리 형태로 저장 예:{'question_list' : [1,2,3,4,5]]}
+
+    # print(context['question_list'])  #값조회
+    # print(type(context['question_list'][0])) # 0번쨰 타입확인
+    # print(context['question_list'][0].id) #ID값
+    # print(context['question_list'][0].question_text)
+    # print(context['question_list'][0].data)
+
+    return render(request, 'vote/index.html', context)
+
+
+8. <html>
+    <head>
+        <title></title>
+
+    </head>
+    <body>
+        {% if question_list %}
+        <ul>
+            {% if question_list %}
+            <h3>
+                <li>
+                    <a href = "/vote/{{question_id}}/"> {{question.question_text}} </a>
+                </li>
+            </h3>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <h3> No question List</h3>
+        {% endfor %}
+        
+    </body>
+</html>
+
+템 플릾 테그 https://docs.djangoproject.com/ko/4.1/ref/templates/builtins/
+{% if %} else endif  반복문  for endfor  데이터 {{데이터}}
+
+
+9.
+
+<QuerySet [<Question: who do you like best?>, <Question: where do you live?>, <Question: what is your hobby?>]>
+<class 'vote.models.Question'>
+1
+who do you like best?
+2023-03-24
+[27/Mar/2023 14:08:56] "GET / HTTP/1.1" 200 624
+
+
+
