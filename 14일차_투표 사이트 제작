@@ -1,0 +1,267 @@
+------------------------------------------------------------------------------------------------------------
+
+투표 사이트 제작
+
+model 작업
+
+1. vote 앱 생성 및 등록
+
+앱 생성
+(mysite) C:\project\mysite>django-admin startapp vote
+
+
+등록
+경로 : C:\project\mysite\config\setting.py
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'MTV.apps.MtvConfig',
+    'vote.apps.VoteConfig',
+]
+
+
+
+2. model 정의
+
+경로 : C:\project\mysite\vote\models.py
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    data = models.DateField()
+
+    def __str__(self):
+        return self.question_text
+    
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.choice_text
+
+
+
+3. admin에 등록
+
+경로: C:\project\mysite\vote\admin.py
+
+from django.contrib import admin
+from .models import Question,Choice
+
+# Register your models here.
+
+admin.site.register(Question)
+admin.site.register(Choice)
+
+
+
+4. migration 작업
+
+(mysite) C:\project\mysite>python manage.py makemigrations
+Migrations for 'vote':
+  vote\migrations\0001_initial.py
+    - Create model Question      
+    - Create model Choice        
+
+(mysite) C:\project\mysite>python manage.py migrate       
+Operations to perform:
+  Apply all migrations: MTV, admin, auth, contenttypes, sessions, vote
+Running migrations:
+  Applying vote.0001_initial... OK
+
+
+
+5. 서버 실행 및 확인
+
+질문 3개 추가
+QUESTION
+	Where do you live?
+	Who do you like best?
+	What is your hobby?
+
+답변 3개 추가
+CHOICE(What is your hobby?)
+	Climbing
+	Soccer
+	Reading
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Templates & Views작업
+
+6. 
+
+(1).
+
+경로: C:\project\mysite\config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+# from MTV import views
+from vote import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('MTV/', include('MTV.urls')),
+    path('vote/', include('vote.urls')),
+    path('',views.index),
+]
+
+(2).
+
+경로: C:\project\mysite\vote\urls.py(새로 생성)
+
+from django.urls import path
+from . import views
+
+app_name = 'vote'
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    # path('<int:question_id>/', views.detail, name='detail'),
+    # path('<int:question_id>/vote/', views.vote, name='vote'),
+    # path('<int:question_id>/result/', views.result, name='result'),
+]
+
+
+
+7. 
+
+경로: C:\project\mysite\vote\views
+
+from django.shortcuts import render
+from vote.models import Question
+
+# Create your views here.
+
+def index(request):
+    question_list = Question.objects.all().order_by()
+    context = {'question_list':question_list} 
+
+    # print(context['question_list'])
+    # print(type(context['question_list'][0]))
+    # print(context['question_list'][0].id)
+    # print(context['question_list'][0].question_text)
+    # print(context['question_list'][0].data)
+
+    return render(request, 'vote/index.html', context)
+
+
+8.
+
+(1). templates 디렉터리에 vote 디렉터리 생성
+(2). vote 디렉터리 안에 index.html 파일 생성
+(3). 아래 내용 작성
+
+경로: C:\project\mysit\templates\vote\index.html
+
+<html>
+<head>
+    <title>Vote Project</title>
+</head>
+
+<body>
+<!-- Template/vote/index.html -->
+{% if question_list %}
+<ul>
+    {% for question in question_list %}
+    <h3>
+        <li>
+            <a href="/vote/{{question.id}}/"> {{question.question_text}} </a>
+        </li>
+    </h3>
+    {% endfor %}
+</ul>
+{% else %}
+<h3>No Question List</h3>
+{% endif %}
+</body>
+</html>
+
+
+
+
+Templates Tag
+
+조건문
+{% if %}
+{% else %}
+{% endif %}
+
+반복문
+{% for %}
+{% endfor %}
+
+데이터 
+{{데이터}}
+
+https://docs.djangoproject.com/ko/3.1/ref/templates/builtins/
+
+
+9. 서버 실행 및 확인
+
+    print(context['question_list'])
+    print(type(context['question_list'][0]))
+    print(context['question_list'][0].id)
+    print(context['question_list'][0].question_text)
+    print(context['question_list'][0].data)
+
+<QuerySet [<Question: What is your hobby?>, <Question: Who do you like best?>, <Question: Where do you live?>]>
+<class 'vote.models.Question'>
+1
+What is your hobby?
+2023-03-24
+
+
+
+
+10. 주석 해체
+경로: C:\project\mysite\vote\urls.py 
+
+
+11.
+
+
+
+
+from random import randrange
+ 
+press = int(input("수입력: "))
+
+if press == 1:
+    r = randrange(1,11)
+
+elif press == 2:
+    r = randrange(1,101)
+
+elif press == 3:
+    r = randrange(1,1001)
+
+else:
+    print("잘못입력하셨습니다. ")
+
+
+
+
+try:
+    print(r)
+
+except:
+    print("r값이 존재하지 않습니다.")
+
+
+
+
+
+
+
+
+
