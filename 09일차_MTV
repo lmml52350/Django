@@ -75,7 +75,7 @@ urlpatterns = [
 def index(request):
     return HttpResponse("Hello, World. Django Index Page!")
 
-def lang(request):
+def lang(request,lang):
     lang_code = {'ko':'Korean', 'en':'English'}
 
     if lang_code.get(lang):
