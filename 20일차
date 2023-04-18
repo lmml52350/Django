@@ -1,0 +1,188 @@
+Board Update - 실습
+
+1. url 설정
+    path('update_board/<int:pk>/', views.BoardUpdate.as_view(), name='board_update'),
+
+
+2. form정의
+
+class BoardUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Board
+        fields = ('title', 'file_upload', 'content')
+
+
+3. views 정의 (UpdateView호출)
+
+from django.shortcuts import render, redirect, get_object_or_404
+from Board.models import Board
+from Board.forms import BoardCreateForm, BoardUpdateForm
+from django.views.generic import DetailView, ListView, CreateView, UpdateView
+
+# Create your views here.
+
+class BoardUpdate(UpdateView):
+    model = Board
+    form_class = BoardUpdateForm
+    template_name = 'Board/board_form_update.html'
+
+4. Templates작업(form_update.html)
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="board_form-block">
+<div class="container mt-3">
+  <form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+    <div class="card">
+      <div class="card-header input-group">
+        <span class="input-group-text">제목 입력</span>
+        {{ form.title }}
+      </div>
+      <div class="card-header input-group">
+        {{ form.file_upload }}
+      </div>
+      <div class="card-body">
+        {{ form.content }}
+      </div>
+      <button type="submit" class="btn btn-outline-dark">게시글 수정</button>
+    </div>
+  </form>
+</div>
+</section>
+
+{% endblock %}
+
+
+
+5. Templates작업(Board_detail.html)
+<a href="{% url 'Board:board_update' object.id %}" class="btn btn-outline-dark">수정</a>
+
+
+서버 실행 및 확인
+
+
+
+
+Board Update - 실습
+
+1. url 설정
+
+2. form정의
+
+3. views 정의 (UpdateView호출)
+
+4. Templates작업(form_update.html)
+
+5. Templates작업(Board_detail.html)
+
+
+-------------------------------------------
+배포
+
+1. https://www.pythonanywhere.com/
+회원가입
+
+2. 요금제 무료 사용
+Create Beginner account
+
+3. 계정 정보 입력 및 약관동의
+사용자명과 이메일 및 비밀번호 입력
+
+4. 회원 가입 완료
+End tour 클릭
+
+5. Files클릭
+upload a file 클릭 (압축파일 업로드)
+
+6. Open Bash console here클릭
+
+7.  명령어 입력
+1) 05:01 ~ $ pwd  [현재 경로 확인] 
+> /home/apeach9
+
+2) 05:01 ~ $ ls [내용물 확인]
+README.txt  project.zip
+
+3) 05:02 ~ $ unzip project.zip [압축 풀기]
+
+4) 05:04 ~ $ ls [확인]
+README.txt  project  project.zip
+
+5) 05:04 ~ $ mkdir venvs [디렉터리 생성]
+05:05 ~ $ cd venvs [디렉터리로 이동]
+
+6) 05:05 ~/venvs $ virtualenv venv --python=python3.7
+[가상환경 생성 및 파이썬3.7 설치]
+
+7) 05:07 ~/venvs $ source venv/bin/activate
+[가상환경 활성화]
+
+8)(venv) 05:08 ~/venvs $ pip install django==3.1.3
+[장고 설치] - 오래걸린다(대기)
+
+9) 설치 확인 
+Successfully installed asgiref-3.6.0 django-3.1.3 pytz-2023.3 
+sqlparse-0.4.3 typing-extensions-4.5.0
+
+8. Web 클릭 >  Add a new web app클릭 > NEXT클릭
+> Manual configuration클릭 > Python 3.7클릭 > NEXT클릭
+
+9. WSGI configuration  file:/var/www/apeach9_pythonanywhere_com_wsgi.py 클릭
+
+
+import os
+import sys
+
+path = "/home/apeach9/project/mysite"
+
+if path not in sys.path:
+    sys.path.append(path)
+
+from django.contrib.staticfiles.handlers import StaticFilesHandler
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+application = StaticFilesHandler(get_wsgi_application())
+
+10. Virtualenv:
+
+/home/apeach9/venvs/venv입력
+
+
+
+11. 에러 
+ 
+DisallowedHost at /
+Invalid HTTP_HOST header: 'apeach9.pythonanywhere.com'. You may need to add 'apeach9.pythonanywhere.com' to ALLOWED_HOSTS.
+
+
+12. 디버깅 모드 종료
+
+DEBUG = False
+
+ALLOWED_HOSTS = ["*"]
+
+
+13. Reload 클릭(초록색 버튼)
+
+
+14. 
+apeach9.pythonanywhere.com
+
+--------------------------------------------------------
+
+삭제
+1. Web 맨 아래
+Delete apeach9.pythonanywhere.com 클릭
+
+2. Files클릭 후
+모든 파일 휴지통 눌러서 삭제
+
+3. Consoles
+Your consoles 오른쪽에 X버튼 누르기
+
+
+
