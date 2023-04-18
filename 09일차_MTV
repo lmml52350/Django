@@ -25,7 +25,7 @@ urlpatterns = [
 from django.urls import path
 from MTV import views
 
-app_name = 'MTV' (url 중복 패턴 방지하기 위해 사용)
+app_name = 'MTV'  #(url 중복 패턴 방지하기 위해 사용)
 
 urlpatterns = [
     path('', views.index ),
