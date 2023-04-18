@@ -1,0 +1,195 @@
+
+
+templates 실습
+1. 앱 생성
+(myhome) C:\Python_Jango_Quiz\myhome>django-admin startapp main
+
+(myhome) C:\Python_Jango_Quiz\myhome>django-admin startapp overview
+
+(myhome) C:\Python_Jango_Quiz\myhome>django-admin startapp document 
+
+2. 앱 등록
+경로: C:\PYTHON_JANGO_QUIZ\myhome\config\setting.py
+
+INSTALLED_APPS = [
+    'main.apps.MainConfig',
+    'overview.apps.OverviewConfig',
+    'document.apps.DocumentConfig',
+]
+
+3. templates 계층화 구조
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\config\setting.py
+
+TEMPLATES = [
+    {
+        'DIRS': [BASE_DIR/'templates'],
+	}]
+
+4. url 설정(메인 페이지, 계층화 작업)
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+from main import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('chart/', include('chartAPP.urls')),
+    path('' ,views.index),
+    path('overview/', include('overview.urls')),
+    path('document/', include('document.urls')),
+]
+
+5. overview > urls 설정
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\overview\urls.py (새로 생성)
+
+from django.urls import path
+from . import views
+
+app_name = 'overview'
+
+urlpatterns = [
+    path('index.html/',views.index),
+    path('python.html/',views.func_python),
+    path('django.html/',views.func_django),
+]
+
+6. document > urls 설정
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\document\urls.py (새로 생성)
+
+from django.urls import path
+from . import views
+
+app_name = 'document'
+
+urlpatterns = [
+    path('python/tutorial.html/', views.python_tutorial),
+    path('python/install.html/', views.python_install),
+    path('django/tutorial.html/', views.django_tutorial),
+    path('django/install.html/', views.django_install),
+]
+
+7. views 설정(main)
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\main\views.py
+
+from django.shortcuts import render
+
+# Create your views here.
+
+def index(request):
+    return render(request, 'main/index.html')
+
+
+8. views 설정(overview)
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\overview\views.py
+
+def index(request):
+    return render(request, 'overview/index.html')
+
+def func_python(request):
+    return render(request, 'overview/python.html')
+
+def func_django(request):
+    return render(request, 'overview/django.html')
+
+9. views 설정(document)
+
+경로: C:\PYTHON_JANGO_QUIZ\myhome\document\views.py
+
+def python_tutorial(request):
+    return render(request,'document/python/tutorial.html')
+
+def python_install(request):
+    return render(request, 'document/python/install.html')
+
+def django_tutorial(request):
+    return render(request, 'document/django/tutorial.html')
+
+def django_install(request):
+    return render(request, 'document/django/install.html')
+
+
+
+10. templates 디렉터리 생성
+
+1. main,overview,document 디렉터리 생성
+
+2.
+main > index.html 파일 생성
+overview> index.html 파일 생성
+overview> python.html 파일 생성
+overview> django.html 파일 생성
+
+3. 
+document > python 디렉터리 생성
+document > django디렉터리 생성
+
+4. 
+document > python > tutorial.html 파일 생성
+document > python > install.html 파일 생성
+document > django > tutorial.html 파일 생성
+document > django > install.html 파일 생성
+
+
+11. html문서 작성(main)
+<html>
+  <head>
+    <title>Templates Test</title>
+  </head>
+  <body>
+    <h1>Overview URL Link!</h1>
+      <h4>
+      <li><a href="http://127.0.0.1:8000/overview/index.html">
+        http://127.0.0.1:8000/overview/index.html</a></li>
+      <li><a href="http://127.0.0.1:8000/overview/python.html">
+        http://127.0.0.1:8000/overview/python.html</a></li>
+      <li><a href="http://127.0.0.1:8000/overview/django.html">
+        http://127.0.0.1:8000/overview/django.html</a></li>
+      </h4>
+
+    <h1>Document URL Link!</h1>
+      <h4>
+      <li><a href="http://127.0.0.1:8000/document/python/tutorial.html">
+        http://127.0.0.1:8000/document/python/tutorial.html</a></li>
+      <li><a href="http://127.0.0.1:8000/document/python/install.html">
+        http://127.0.0.1:8000/document/python/install.html</a></li>
+      <li><a href="http://127.0.0.1:8000/document/django/tutorial.html">
+        http://127.0.0.1:8000/document/django/tutorial.html</a></li>
+      <li><a href="http://127.0.0.1:8000/document/django/install.html">
+        http://127.0.0.1:8000/document/django/install.html</a></li>
+      </h4>
+  </body>
+</html>
+
+
+12. html문서 작성
+<html>
+    <head>
+        <title>Templates Quiz3</title> 
+    </head>
+    
+    <body>
+        <h1>Contents: "document/django/install.html"</h1>
+    </body>
+</html>
+
+
+13. 서버 실행 및 접속 테스트
+
+
+
+
+
+
+
+
+
+
+
+
