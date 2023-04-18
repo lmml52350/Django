@@ -1,0 +1,326 @@
+Board Detail
+
+
+1.
+
+경로: C:\project\mysite\Board\urls.py
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.board_list, name = 'list'),
+    path('<int:pk>/', views.BoardDetail.as_view(), name ='detail')
+]
+
+2.
+
+경로: C:\project\mysite\Board\views.py
+
+from django.shortcuts import render
+from Board.models import Board
+from django.views.generic import DetailView
+
+# Create your views here.
+
+def board_list(request):
+    return render(request,'Board/board_list.html')
+
+
+class BoardDetail(DetailView):
+    model = Board
+    template_name = 'Board/board_detail.html'
+
+3.
+
+경로: C:\project\mysite\templates\Board\board_detail.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="board_detail-block">
+  <div class="container mt-3">
+  <div class="card border-dark mb-3">
+    <div class="card-header">
+      <h4 class="pt-1"> {{ object.title }} </h4>
+
+      {% if object.modify_date %}
+      <p class="pt-1"> Created by {{ object.author }} on {{ object.modify_date }}</p>
+      {% else %}
+      <p class="pt-1"> Created by {{ object.author }} on {{ object.create_date }}</p>
+      {% endif %}
+
+    </div>
+    <div class="card-header">
+      <a href="#" class="text-decoration-none text-muted" role="button" download>
+        첨부파일 : <i class="fa-solid fa-file-lines me-2"></i>FileName
+      </a>
+    </div>
+    <div class="card-body text-dark">
+      <p class="card-text">{{ object.content | linebreaksbr }}</p>
+      <div class="mt-4">
+
+      </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+      <a href="/" class="btn btn-outline-dark">목록</a>
+      <span>
+        <a href="#" class="btn btn-outline-dark">수정</a>
+        <a href="#" class="btn btn-outline-dark">삭제</a>
+      </span>
+    </div>
+  </div>
+  </div>
+</section>
+
+{% endblock %}
+
+
+4. 서버 실행 및 확인
+http://127.0.0.1:8000/Board/1/
+
+
+5. 
+
+경로: C:\project\mysite\Board\models.py
+
+from django.db import models
+from django.contrib.auth.models import User
+import os
+
+# Create your models here.
+
+class Board(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField()
+    file_upload = models.FileField(upload_to='board/data/%Y/%m/%d/', blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null=True, blank= True)
+
+    def __str__(self):
+        return '[PK:{}] - {} :: {}'.format(self.pk, self.title, self.author)
+    
+    def get_FileName(self):
+        return os.path.basename(self.file_upload.name)
+    
+
+
+6.
+
+경로: C:\project\mysite\templates\Board\board_detail.html
+
+    <div class="card-header">
+      <a href="#" class="text-decoration-none text-muted" role="button" download>
+        첨부파일 : <i class="fa-solid fa-file-lines me-2"></i> {{ object.get_FileName }}
+      </a>
+    </div>
+    
+
+7.
+
+경로: C:\project\mysite\templates\Board\board_detail.html
+
+    <div class="card-header">
+      <a href=" {{ object.file_upload }} " class="text-decoration-none text-muted" role="button" download>
+        첨부파일 : <i class="fa-solid fa-file-lines me-2"></i> {{ object.get_FileName }}
+      </a>
+    </div>
+
+------------------------------------------------------------------------------------------
+
+Board List
+
+1. 게시글 100개 코드로 생성
+
+경로: C:\project\mysite\models_test.py
+
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","config.settings")
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+
+from Board.models import Board
+from django.contrib.auth.models import User
+
+for i in range(100):
+    p = Board(title="Test_Board_{}".format(i), content="Board Test Content",author= User.objects.get(id=1))
+    p.save()
+
+
+2. 서버 실행 및 확인
+
+
+3.
+
+경로: C:\project\mysite\Board\views.py
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.BoardList.as_view(), name = 'list'),
+    path('<int:pk>/', views.BoardDetail.as_view(), name = 'detail')
+]
+
+경로: C:\project\mysite\Config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+from Board import views
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('Board/', include('Board.urls')),
+    path('common/',include('common.urls')),
+    path('', views.BoardList.as_view(), name = 'list'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+4.
+
+경로: C:\project\mysite\Config\views.py
+
+from django.shortcuts import render
+from Board.models import Board
+from django.views.generic import DetailView, ListView
+
+# Create your views here.
+
+class BoardList(ListView):
+    model = Board
+    template_name = 'Board/board_list.html'
+    ordering = '-pk'
+
+class BoardDetail(DetailView):
+    model = Board
+    template_name = 'Board/board_detail.html'
+
+
+
+5.
+
+경로: C:\project\mysite\templates\Board\board_list.html
+
+    <!-- Table Body 영역 -->
+    <tbody>
+      {% for board in object_list %}
+      <tr class="text-center">
+        <td>{{ board.id }}</td>
+        <td>{{ board.title }}</td>
+        <td>{{ board.author }}</td>
+        {% if object.modify_date %}
+        <td>{{ board.modify_date }}</td>
+        {% else %}
+        <td>{{ board.create_date }}</td>
+        {% endif %}
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table><br>
+
+
+6. 서버 실행 후 확인
+
+http://127.0.0.1:8000/
+http://127.0.0.1:8000/Board/
+
+------------------------------------------------------------------------------------------
+
+7.
+
+경로:C:\project\mysite\Board\models.py
+
+from django.db import models
+from django.contrib.auth.models import User
+import os
+
+# Create your models here.
+
+class Board(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField()
+    file_upload = models.FileField(upload_to='board/data/%Y/%m/%d/', blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null=True, blank= True)
+
+    def __str__(self):
+        return '[PK:{}] - {} :: {}'.format(self.pk, self.title, self.author)
+    
+    def get_FileName(self):
+        return os.path.basename(self.file_upload.name)
+    
+    def get_absolute_url(self):
+        return '/Board/{}/'.format(self.pk)
+
+
+8.
+
+경로: C:\project\mysite\templates\Board\board_list.html
+
+    <!-- Table Body 영역 -->
+    <tbody>
+      {% for board in object_list %}
+      <tr class="text-center">
+        <td>{{ board.id }}</td>
+
+        {% if user.is_authenticated %}
+        <td><a class = "text-reset text-decoration-none" href= "{{ board.get_absolute_url }}">{{ board.title }}</a></td>
+        {% else %}
+        <td><a class = "login_check text-reset text-decoration-none"> {{ board.title }} </a></td>        
+        {% endif %}
+
+        <td>{{ board.author }}</td>
+        {% if object.modify_date %}
+        <td>{{ board.modify_date }}</td>
+        {% else %}
+        <td>{{ board.create_date }}</td>
+        {% endif %}
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table><br>
+
+
+(맨 아래 추가)
+
+{% block script %}
+<script type='text/javascript'>
+  $(document).ready(function(){
+    $(".login_check").on('click', function(){
+      alert("로그인 후 이용이 가능 합니다.")
+    });
+  });
+</script>
+{% endblock %}
+
+
+9.
+
+경로: C:\project\mysite\templates\board_base.html
+
+  <!-- Jquery CDN URL -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+  crossorigin="anonymous"> </script>
+
+
+{% block script %}
+{% endblock %}
+
+
+10. 서버 실행 및 테스트
+
+로그인 -> 리스트 제목 클릭
+로그아웃 -> 리스트 제목 클릭
+
+
+
+
