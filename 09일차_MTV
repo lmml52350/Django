@@ -1,0 +1,193 @@
+1. project > code열기
+cmd 실행 
+가상환경 진입 
+C:\venvs\mysite\Scripts\activate
+
+경로
+working Dir >  C: \project
+project Dir > C: \project\mysite
+DJango project Dir > C: \project\mysite\config
+Django app Dir > C: \project\mysite\MTV
+manage file> C: \project\mysite\manage.py
+ 
+2. 패턴 정의1 (계층화 구조)
+
+경로: C:\project\mysite\config\urls.py
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('MTV/', include('MTV.urls')),
+
+]
+
+
+3. 패턴정의2
+
+경로: C:\project\mysite\MTV\urls.py (새로 생성)
+
+from django.urls import path
+from MTV import views
+
+app_name = 'MTV' (url 중복 패턴 방지하기 위해 사용)
+
+urlpatterns = [
+    path('', views.index ),
+]
+
+
+4. views 정의
+
+경로: C:\project\mysite\MTV\views.py
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+def index(request):
+    return HttpResponse("Hello, World. Django Index Page!")
+
+
+5. 서버 구동
+(mysite) C:\project>cd mysite 
+(mysite) C:\project\mysite>python manage.py runserver
+
+주소 입력: http://127.0.0.1:8000/MTV/
+
+
+6. 추가 패턴 정의(파라미터<> 사용)
+
+경로: C:\project\mysite\MTV\urls.py
+
+from django.urls import path
+from MTV import views
+
+app_name = 'MTV'
+
+urlpatterns = [
+    path('', views.index ),
+    path('document/<lang>/', views.lang),
+    path('numpage/<int:num>/', views.num),
+]
+
+
+7. 패턴에 따른 views 정의
+
+경로: C:\project\mysite\MTV\views.py
+
+def index(request):
+    return HttpResponse("Hello, World. Django Index Page!")
+
+def lang(request):
+    lang_code = {'ko':'Korean', 'en':'English'}
+
+    if lang_code.get(lang):
+        message = "{} page!".format(lang_code.get(lang))
+    else:
+        message = "{} Not found".format(lang_code.get(lang))
+    
+    return HttpResponse(message)
+
+def num(request):
+    num_lst = [1,2,3,4,5]
+
+    if num in num_lst:
+        message = "Numbers {}".format(num)
+    else:
+        message = "Numbers {} Not found".format(num)
+
+    return HttpResponse(message)
+
+8. 서버 구동 및 확인
+
+(mysite) C:\project\mysite>python manage.py runserver
+
+http://127.0.0.1:8000/MTV/document/ko/
+http://127.0.0.1:8000/MTV/document/en/
+http://127.0.0.1:8000/MTV/document/jp/
+-----------------------------------------------
+http://127.0.0.1:8000/MTV/numpage/1/
+http://127.0.0.1:8000/MTV/numpage/2/
+http://127.0.0.1:8000/MTV/numpage/3/
+http://127.0.0.1:8000/MTV/numpage/4/
+http://127.0.0.1:8000/MTV/numpage/5/
+----------------------------------------------
+http://127.0.0.1:8000/MTV/numpage/6/
+http://127.0.0.1:8000/MTV/numpage/7/
+
+
+9. 정규 표현식 사용
+
+경로: C:\project\mysite\MTV\urls.py
+
+from django.urls import path, re_path
+from MTV import views
+
+app_name = 'MTV'
+
+urlpatterns = [
+    path('', views.index ),
+    re_path(r'document/(ko|en)/$', views.lang),
+    re_path(r'numpage/(1|2|3)/$', views.num),
+]
+
+
+10. views 수정
+
+경로: C:\project\mysite\MTV\views.py
+
+def index(request):
+    return HttpResponse("Hello, World. Django Index Page!")
+
+def lang(request, lang):
+    lang_code = {'ko':'Korean', 'en':'English'}
+    message = "{} Page!".format(lang_code.get(lang))
+    return HttpResponse(message)
+
+def num(request, num):
+    num_lst = [1,2,3,4,5]
+    message = "Numbers {}".format(num)
+    return HttpResponse(message)
+
+
+11. 서버 구동
+
+(mysite) C:\project\mysite>python manage.py runserver
+
+http://127.0.0.1:8000/MTV/document/ko/
+http://127.0.0.1:8000/MTV/document/en/
+http://127.0.0.1:8000/MTV/document/jp/ -> page not found 404
+-----------------------------------------------
+http://127.0.0.1:8000/MTV/numpage/1/
+http://127.0.0.1:8000/MTV/numpage/2/
+http://127.0.0.1:8000/MTV/numpage/3/
+http://127.0.0.1:8000/MTV/numpage/4/
+http://127.0.0.1:8000/MTV/numpage/5/
+----------------------------------------------
+http://127.0.0.1:8000/MTV/numpage/6/ -> page not found 404
+http://127.0.0.1:8000/MTV/numpage/7/
+
+
+12. 디버깅 모드 끄는법
+
+경로: C:\project\config\setting.py
+
+DEBUG = False
+
+ALLOWED_HOSTS = ["*"]
+
+
+13. 서버 구동 및 확인
+
+(mysite) C:\project\mysite>python manage.py runserver
+
+
+
+
+
+
+
+
