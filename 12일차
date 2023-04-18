@@ -1,0 +1,203 @@
+
+1. model작업
+
+경로 :C:\project\mysite\MTV\models.py
+
+from django.db import models
+
+# Create your models here.
+
+class Board(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField(max_length=500)
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null =True, blank=True)
+
+2. Table 생성 (migrations작업)
+
+(mysite) C:\project\mysite>python manage.py makemigrations
+Migrations for 'MTV':
+  MTV\migrations\0001_initial.py
+    - Create model Board        
+
+(mysite) C:\project\mysite>python manage.py migrate       
+Operations to perform:
+  Apply all migrations: MTV, admin, auth, contenttypes, sessions
+Running migrations:
+  Applying MTV.0001_initial... OK
+
+# 에러 나면 2번 입력
+
+3. admin에 테이블 등록
+
+경로 :C:\project\mysite\MTV\admin.py
+
+from django.contrib import admin
+from .models import Board
+
+# Register your models here.
+
+admin.site.register(Board)
+
+
+
+4. 서버 실행 및 admin 페이지 확인
+
+Board 테이블 확인
+
+
+5. 외부 application 연결
+
+경로: C:\project\mysite\models_test.py (새로 생성)
+
+import os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","config.settings")
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+
+
+6. 데이터 조회 (read)
+
+경로: C:\project\mysite\models_test.py 
+
+from MTV.models import Board
+
+def data_selete():
+    print(Board.objects.all())
+
+if __name__ == "__main__":
+    data_selete()
+
+데이터 생성 전 : <QuerySet []>
+
+7. 데이터 생성 후 조회
+
+데이터 생성 후 : <QuerySet [<Board: Board object (1)>]>
+
+8. 데이터 개수 조회
+
+from MTV.models import Board
+
+def data_selete():
+    print(Board.objects.all())
+    print(Board.objects.count())
+
+if __name__ == "__main__":
+    data_selete()
+
+확인: 
+<QuerySet [<Board: Board object (1)>]>
+1
+
+
+9. __str__ 메서드 추가
+
+경로 :C:\project\mysite\MTV\models.py
+
+from django.db import models
+
+# Create your models here.
+
+class Board(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField(max_length=500)
+    create_date = models.DateTimeField(auto_now_add=True)
+    modify_date = models.DateTimeField(auto_now=True, null =True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+
+10. 터미널 확인
+
+__str__ 메서드 추가 전 : 객체 id
+<QuerySet [<Board: Board object (1)>]>
+1
+
+__str__메서드 추가 후: 객체의 title
+<QuerySet [<Board: Board Title>]>
+1
+
+
+
+11. fileter, get 함수 사용하여 데이터 조회
+
+from MTV.models import Board
+
+def data_selete():
+    print(Board.objects.filter(id=1))
+    print(Board.objects.filter(id=2))
+    print(Board.objects.get(id=1))
+    print(Board.objects.get(id=2))
+
+
+if __name__ == "__main__":
+    data_selete()
+
+결과: 
+filter 사용 > 더 많이 사용!
+<QuerySet [<Board: Board Title>]>
+<QuerySet []>
+
+get 사용 >
+Board Title
+Traceback (most recent call last):
+  File "c:\project\mysite\models_test.py", line 20, in <module>
+    data_selete() # get은 존재하지 않는 데이터 조회시 에러를 발생 
+
+
+12.fileter함수 사용하여 데이터 내용으로 조회
+
+from MTV.models import Board
+
+def data_selete():
+    print(Board.objects.filter(title__contains ="Board"))
+    print(Board.objects.filter(title__contains ="Django"))
+
+if __name__ == "__main__":
+    data_selete()
+
+결과: 
+<QuerySet [<Board: Board Title>]>
+<QuerySet []>
+
+
+13. 데이터 생성
+
+from MTV.models import Board
+def data_create():
+    Board_data = Board(title="Django Project", content="Django Project Model Data Create Test" )
+    Board_data.save()
+    print(Board.objects.all())
+
+if __name__ == "__main__":
+    data_create()
+
+결과: > 한번만 실행하자!
+<QuerySet [<Board: Board Title>, <Board: Django Project>]>
+
+
+14. 데이터 삭제
+from MTV.models import Board
+
+def data_delete():
+    Board_data = Board.objects.get(title="Django Project")
+    Board_data.delete()
+    print(Board.objects.all())
+
+if __name__ == "__main__":
+    data_delete()
+
+결과: 한번만 실행하자!
+QuerySet [<Board: Board Title>]>
+
+
+
+
+
+
+
+
+
+
