@@ -3,12 +3,6 @@ cmd 실행
 가상환경 진입 
 C:\venvs\mysite\Scripts\activate
 
-경로
-working Dir >  C: \project
-project Dir > C: \project\mysite
-DJango project Dir > C: \project\mysite\config
-Django app Dir > C: \project\mysite\MTV
-manage file> C: \project\mysite\manage.py
  
 2. 패턴 정의1 (계층화 구조)
 
