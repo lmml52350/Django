@@ -1,0 +1,352 @@
+1. 
+
+경로 : C:\project\mysite\templates\Board \board_list.html
+
+  <!-- pagination 영역 -->
+  <ul class="pagination justify-content-center">
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">이전</a>
+    </li>
+
+    {% for page_number in page_obj.paginator.page_range %}
+    {% if page_number == page_obj.number %}
+    <li class="page-item active">
+      <a class="page-link" href="?page={{page_number}}"> {{page_number}} </a>
+    </li>
+    {% else %}
+    <li class="page-item">  
+      <a class="page-link" href="?page={{page_number}}"> {{page_number}} </a>
+    </li>
+
+    {% endif %}
+    {% endfor %}
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">다음</a>
+    </li>
+  </ul>
+</div>
+
+2. 서버 실행 및 확인
+
+3.
+
+  <!-- pagination 영역 -->
+  <ul class="pagination justify-content-center">
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">이전</a>
+    </li>
+
+    {% for page_number in page_obj.paginator.page_range %}
+    {% if page_number >= page_obj.number|add:-3 and page_number <= page_obj.number|add:3 %}
+    {% if page_number == page_obj.number %}
+    <li class="page-item active">
+      <a class="page-link" href="?page={{page_number}}"> {{page_number}} </a>
+    </li>
+    {% else %}
+    <li class="page-item">  
+      <a class="page-link" href="?page={{page_number}}"> {{page_number}} </a>
+    </li>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+
+4. 서버 실행 및 확인
+
+
+5.
+
+   <!-- pagination 영역 -->
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="?page={{ page_obj.previous_page_number }}">이전</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">이전</a>
+    </li>
+    {% endif %}
+
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{page_obj.next_page_number}}">다음</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="#">다음</a>
+    </li>
+    {% endif %}
+
+
+6. 서버 실행 및 확인
+
+
+7.
+
+<!-- pagination 영역 -->
+  {% if page_obj.paginator.count >= page_obj.paginator.per_page %}
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="?page={{ page_obj.previous_page_number }}">이전</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" data-page="#" href="#">이전</a>
+    </li>
+    {% endif %}
+
+    {% for page_number in page_obj.paginator.page_range %}
+    {% if page_number >= page_obj.number|add:-3 and page_number <= page_obj.number|add:3 %}
+    {% if page_number == page_obj.number %}
+    <li class="page-item active">
+      <a class="page-link" href="?page={{page_number}}"> {{page_number}} </a>
+    </li>
+    {% else %}
+    <li class="page-item">  
+      <a class="page-link" href="?page={{page_number}}"> {{page_number}} </a>
+    </li>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{page_obj.next_page_number}}">다음</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="#">다음</a>
+    </li>
+    {% endif %}
+
+  </ul>
+  {% endif %}
+
+8. 서버 실행 및 확인
+
+-----------------------------------------------------------------------------------
+
+Board Create 구현
+
+1. 
+경로: C:\project\mysite\Board\urls.py
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.BoardList.as_view(), name = 'list'),
+    path('<int:pk>/', views.BoardDetail.as_view(), name = 'detail'),
+    path('create_board/', views.BoardCreate.as_view(), name='board_create'),
+]
+
+
+2.
+
+경로: C:\project\mysite\Board\forms.py(새로생성)
+
+from django import forms
+from .models import Board
+
+class BoardCreateForm(forms.ModelForm):
+    class Meta:
+        model = Board
+        fields = ('title', 'file_upload', 'content')
+
+
+3.
+
+경로: C:\project\mysite\Board\views.py
+
+
+from django.shortcuts import render, redirect
+from Board.models import Board
+from Board.forms import BoardCreateForm
+from django.views.generic import DetailView, ListView, CreateView
+
+# Create your views here.
+
+class BoardCreate(CreateView):
+    model = Board
+    form_class = BoardCreateForm
+    template_name = 'Board/board_form.html'
+
+    def form_valid(self, form):
+        current_user = self.request.user
+        if current_user.is_authenticated:
+            form.instance.author = current_user
+            return super().form_valid(form)
+        else:
+            return redirect('/Board')
+
+
+4. 
+경로: C:project\mysite\templates\board_navbar.html
+
+
+        <li class="me-2">
+            <a class="nav-link" href="{% url 'Board:board_create' %}"><i class="me-2 fa-solid fa-pencil"></i> Board Write </a>
+        </li>
+
+
+
+5.
+
+경로: C:\project\mysite\templates\Board\borad_forms.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="board_form-block">
+<div class="container mt-3">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card">
+      <div class="card-header input-group">
+        <span class="input-group-text">제목 입력</span>
+        {{ form.title }}
+      </div>
+      <div class="card-header input-group">
+        {{ form.file_upload }}
+      </div>
+      <div class="card-body">
+        {{ form.content }}
+      </div>
+      <button type="submit" class="btn btn-outline-dark">게시글 등록</button>
+    </div>
+  </form>
+</div>
+</section>
+
+{% endblock %}
+
+
+-------------------------------------------------------------------------------------
+
+Board Delete 구현
+
+1.
+
+경로: C:\project\mysite\Board\urls.py
+
+from django.urls import path
+from . import views
+
+app_name = 'Board'
+
+urlpatterns = [
+    path('', views.BoardList.as_view(), name = 'list'),
+    path('<int:pk>/', views.BoardDetail.as_view(), name = 'detail'),
+    path('create_board/', views.BoardCreate.as_view(), name='board_create'),
+    path('delete_board/<int:pk>/', views.BoardDelete, name='board_delete'),
+]
+
+2. 
+
+경로: C:\project\mysite\Board\views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from Board.models import Board
+from Board.forms import BoardCreateForm
+from django.views.generic import DetailView, ListView, CreateView
+
+from django.contrib.auth.decorators import login_required
+from config import settings
+import os
+
+# Create your views here.
+
+> 데코레이션 패턴은 이미 만들어진 기능(=메타 정보)을 하위 함수에 적용
+> login_required은 로그인 상태를 확인
+
+@login_required(login_url='common:login')
+def BoardDelete(request, pk):
+    board = get_object_or_404(Board, pk=pk)
+    if request.user != board.author:
+        return redirect('Board:detail', pk=pk)
+    
+    if board.file_upload:
+        file_upload_path = os.path.join(settings.MEDIA_ROOT, board.file_upload.path)
+        if os.path.exists(file_upload_path):
+            os.remove(file_upload_path)
+    board.delete()
+    return redirect('Board:list')
+
+
+3.
+경로: C:\project\mysite\templates\Board\borad_detail.html
+
+{% extends "board_base.html" %}
+
+{% block content %}
+
+<section class="board_detail-block">
+  <div class="container mt-3">
+  <div class="card border-dark mb-3">
+    <div class="card-header">
+      <h4 class="pt-1"> {{ object.title }} </h4>
+
+      {% if object.modify_date %}
+      <p class="pt-1"> Created by {{ object.author }} on {{ object.modify_date }}</p>
+      {% else %}
+      <p class="pt-1"> Created by {{ object.author }} on {{ object.create_date }}</p>
+      {% endif %}
+
+    </div>
+    <div class="card-header">
+      <a href="{{ object.file_upload }}" class="text-decoration-none text-muted" role="button" download>
+        첨부파일 : <i class="fa-solid fa-file-lines me-2"></i> {{ object.get_FileName }}
+      </a>
+    </div>
+    <div class="card-body text-dark">
+      <p class="card-text">{{ object.content | linebreaksbr }}</p>
+      <div class="mt-4">
+
+      </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+      <a href="/" class="btn btn-outline-dark">목록</a>
+      {% if user == object.author %}
+      <span>
+        <a href="#" class="btn btn-outline-dark">수정</a>
+        <a href="#" class="delete btn btn-outline-dark" data-uri="{% url 'Board:board_delete' object.id %}">삭제</a>
+      </span>
+      {% else %}
+      <span>
+        <a href="#" class="user_check btn btn-outline-dark">수정</a>
+        <a href="#" class="user_check btn btn-outline-dark">삭제</a>
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+  $(document).ready(function(){
+    $(".delete").on('click',function(){
+      if(confirm("정말로 삭제하시겠습니까?")){
+        location.href = $(this).data('uri');
+      }
+    });
+  });
+
+  $(document).ready(function(){
+    $(".user_check").on('click', function(){
+      alert("자신의 게시글만 수정 및 삭제가 가능합니다.")
+    });
+  });
+</script>
+{% endblock %}
+
+
+
+
