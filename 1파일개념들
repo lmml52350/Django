@@ -1,0 +1,36 @@
+codeit_proj/ #프로젝트명  Project Root
+    manage.py
+    codeit_proj/ # 프로젝트명
+        __init__.py
+        settings.py
+        urls.py
+        wsgi.py
+        
+2.1 Project Root
+최상위 디렉토리인 프로젝트 명(codeit_proj) 디렉토리는 Project Root라고 하고 우리 프로젝트의 전체 파일이 들어 있는 디렉토리 입니다.
+
+2.2 manage.py
+manage.py는 하나의 Django 프로젝트를 생성하면 자동으로 만들어지는 프로젝트 관리를 위한 명령 유틸리티입니다. Django 앱을 만들거나, 데이터베이스 관련 기능을 수행하거나, 개발 서버를 실행하는 등의 여러기능을 실행 할 수 있죠.
+
+manage.py와 거의 동일한 기능을 하는 것으로 django-admin이 있습니다. 실제로 manage.py는 django-admin을 감싸서 구현한 형태로 생성한 프로젝트에 대해 설정을 해주는 몇 가지 기능이 더 들어 있는 것입니다. 다시 말하면 manage.py가 django-admin의 기능을 포함하면서 몇 가지 설정 기능이 더 있는 거죠. 프로젝트를 생성할 때는 django-admin을 사용하고 나머지 모든 기능은 manage.py를 사용하면 됩니다. 
+
+django-admin과 manage.py 에 대해 더 자세하게 알고 싶다면 아래 Django 공식 문서를 참고하세요.
+https://docs.djangoproject.com/en/2.2/ref/django-admin/
+
+2.3 ProjectApp (Django Root)
+Project Root 안에 있는 프로젝트 명(codeit_proj) 디렉토리는 Django 프로젝트를 위한 여러 파일이 담겨 있는 디렉토리 입니다. 우리는 헷갈리지 않게 이 디렉토리를 ProjectApp 라고 하겠습니다.
+
+2.4 __ init __.py
+__init__.py 파일이 포함된 디렉토리를 Python의 패키지로 인식하게끔 하기 위해서 사용합니다. python 3.3 이후 버전부터는 이 파일이 없어도 패키지로 인식되지만 하위 버전 호환을 위해 작성해 주는 것이 좋습니다.
+
+2.5 settings.py
+settings.py 는 Django 프로젝트의 여러 가지 설정을 담고 있는 파일입니다. 아직 내부에 있는 자세한 설정을 배우지는 않았지만, 미리 알고 싶다면 다음 문서를 참고하세요.
+https://docs.djangoproject.com/en/2.2/ref/settings/
+
+2.6 urls.py
+urls.py 는 Django 프로젝트로 들어온 url을 보고 알맞은 로직(View)으로 연결해주는 역할을 하는 파일입니다. 우리 Django 프로젝트의 목차라고 할 수 있겠네요. 이 urls.py에 대해서는 뒤에서 자세하게 다룹니다.
+
+2.7 wsgi.py
+wsgi.py 의 WSGI는 WebServer Gateway Interface의 약자로 파이썬에서 웹 통신을 하기 위한 일종의 약속입니다.  더 자세하게 알기 위해서는 네트워크 통신에 대한 이해가 필요하므로 여기서는 간단하게 웹 서버와 Django 어플리케이션을 연결해주는 역할을 한다는 정도만 알고 넘어가도록 하겠습니다. 자세한 내용은 나중에 배포에 대한 심화 토픽에서 다루도록 할게요.
+만약 지금 WSGI에 대해 더 알고 싶으시다면 아래 문서를 참고하세요.
+https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface
